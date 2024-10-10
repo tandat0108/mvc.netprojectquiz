@@ -1,0 +1,111 @@
+﻿@model IEnumerable<ProjectQuiz.Data.Quiz>
+
+@{
+    ViewData["Title"] = "Quizzes Index";
+}
+
+<div class="dashboard-container">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 sidebar">
+            <h2>Quizzes</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/Projects/Details/@Model.FirstOrDefault()?.Project.Id">Project Details</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Members" asp-route-id="@Model.FirstOrDefault()?.Project.Id">Members</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Quizs">Quizzes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Results" asp-route-id="@Model.FirstOrDefault()?.Project.Id">Results</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 content">
+            <h3>Quiz List</h3>
+            <p>
+                <a asp-action="Create" class="btn btn-success">Create New Quiz</a>
+            </p>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Answers</th>
+                        <th>Correct Answer</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.QuestionText)
+                            </td>
+                            <td>
+                                <ul>
+                                    @foreach (var answer in item.Answers)
+                                    {
+                                        <li>@answer</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IsCorrect)
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.QuizId">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.QuizId">Details</a> |
+                                <a asp-action="Delete" asp-route-id="@item.QuizId">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Styles for Dashboard Layout -->
+<style>
+    .dashboard-container {
+        padding: 20px;
+    }
+
+    .sidebar {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+    .nav-link {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .content {
+        padding-left: 30px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .actions {
+        margin-top: 20px;
+    }
+</style>
+}

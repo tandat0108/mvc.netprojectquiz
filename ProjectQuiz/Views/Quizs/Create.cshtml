@@ -1,0 +1,104 @@
+﻿@model ProjectQuiz.Data.Quiz
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create Quiz Question</h1>
+
+<h4>Quiz</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ProjectId" class="control-label"></label>
+                <select asp-for="ProjectId" class="form-control" asp-items="ViewBag.ProjectId"></select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="QuestionType" class="control-label">Question Type</label>
+                <select asp-for="QuestionType" class="form-control" id="questionTypeSelect">
+                    <option value="multiple-choice">Multiple Choice</option>
+                    <option value="true-false">True/False</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="QuestionText" class="control-label">Question</label>
+                <input asp-for="QuestionText" class="form-control" />
+                <span asp-validation-for="QuestionText" class="text-danger"></span>
+            </div>
+
+            <!-- Multiple Choice Options -->
+            <div id="multipleChoiceOptions" style="display:none;">
+                <div class="form-group">
+                    <label class="control-label">Multiple Choice Options</label>
+                    <div id="multipleChoiceList">
+                        <input type="text" class="form-control mt-2" name="Answers[]" placeholder="Enter option 1" />
+                        <input type="text" class="form-control mt-2" name="Answers[]" placeholder="Enter option 2" />
+                        <input type="text" class="form-control mt-2" name="Answers[]" placeholder="Enter option 3" />
+                        <input type="text" class="form-control mt-2" name="Answers[]" placeholder="Enter option 4" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Correct Answer</label>
+                    <select class="form-control" asp-for="IsCorrect">
+                        <option value="0">Option 1</option>
+                        <option value="1">Option 2</option>
+                        <option value="2">Option 3</option>
+                        <option value="3">Option 4</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- True/False Options -->
+            <div id="trueFalseOption" style="display:none;">
+                <div class="form-group">
+                    <label class="control-label">Correct Answer</label>
+                    <select asp-for="IsCorrect" class="form-control">
+                        <option value="1">True</option>
+                        <option value="0">False</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        document.getElementById('questionTypeSelect').addEventListener('change', function () {
+            var selectedValue = this.value;
+            if (selectedValue === 'multiple-choice') {
+                document.getElementById('multipleChoiceOptions').style.display = 'block';
+                document.getElementById('trueFalseOption').style.display = 'none';
+            } else if (selectedValue === 'true-false') {
+                document.getElementById('multipleChoiceOptions').style.display = 'none';
+                document.getElementById('trueFalseOption').style.display = 'block';
+            }
+        });
+
+        // Trigger change event on page load to show/hide correct sections
+        document.getElementById('questionTypeSelect').dispatchEvent(new Event('change'));
+    </script>
+}
