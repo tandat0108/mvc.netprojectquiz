@@ -46,18 +46,31 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.QuestionText)
+                                <strong>@item.QuestionText</strong>
                             </td>
                             <td>
+                                <!-- Tách các đáp án và hiển thị với ký hiệu A, B, C, D,... -->
                                 <ul>
-                                    @foreach (var answer in item.Answers)
-                                    {
-                                        <li>@answer</li>
+                                    @{
+                                        var answers = item.Answers.Split(',');  // Tách chuỗi đáp án
+                                        var letters = new[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };  // Ký tự từ A đến H
+                                        for (int i = 0; i < answers.Length; i++)
+                                        {
+                                            var answer = answers[i].Trim();  // Loại bỏ khoảng trắng thừa
+                                            if (!string.IsNullOrWhiteSpace(answer))
+                                            {
+                                                <li><strong>@letters[i])</strong> @answer</li>
+                                            }
+                                        }
                                     }
                                 </ul>
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.IsCorrect)
+                                <!-- Hiển thị đáp án đúng theo thứ tự A, B, C, D -->
+                                @{
+                                    var correctAnswerLetter = letters[item.IsCorrect - 1];  // Lấy ký hiệu đáp án đúng
+                                }
+                                <strong>Correct Answer: </strong>@correctAnswerLetter
                             </td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.QuizId">Edit</a> |
@@ -107,5 +120,8 @@
     .actions {
         margin-top: 20px;
     }
+
+    .table {
+        margin-top: 20px;
+    }
 </style>
-}

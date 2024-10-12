@@ -1,52 +1,86 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProjectQuiz.Data;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using ProjectQuiz.ViewModels;
+using ProjectQuiz.Data; // Import namespace của User entity
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
-namespace ProjectQuiz.Controllers
+public class AccountController : Controller
 {
-    public class AccountController : Controller
+    private readonly QuizzDbContext _context;
+
+    public AccountController(QuizzDbContext context)
     {
-        private readonly QuizzDbContext _context;
+        _context = context;
+    }
 
-        public AccountController(QuizzDbContext context)
-        {
-            _context = context;
-        }
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return View();
+    }
 
-        // GET: /Account/Login
-        [HttpGet]
-        public IActionResult Login()
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (ModelState.IsValid)
         {
-            // Truyền một đối tượng User rỗng cho view
-            return View(new User());
-        }
+            // Tìm người dùng dựa trên Username
+            var user = _context.Users.FirstOrDefault(u => u.Username == model.Username);
 
-        // POST: /Account/Login
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(User model)
-        {
-            if (ModelState.IsValid)
+            if (user != null)
             {
-                // Tìm kiếm user trong database dựa trên Username và PasswordHash
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Username == model.Username && u.PasswordHash == model.PasswordHash);
-
-                if (user != null)
+                // So sánh password sau khi hash với PasswordHash từ DB
+                if (VerifyPassword(model.Password, user.PasswordHash))
                 {
-                    // Đăng nhập thành công, chuyển hướng người dùng đến trang Project
-                    return RedirectToAction("Index", "Project");
+                    // Tạo claims cho người dùng
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // Lưu UserId vào claims
+                        new Claim(ClaimTypes.Name, user.Username) // Lưu tên người dùng
+                    };
+
+                    // Tạo identity từ danh sách claims
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    // Tạo principal
+                    var principal = new ClaimsPrincipal(identity);
+
+                    // Lưu thông tin người dùng vào cookie (đăng nhập)
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                    // Chuyển hướng người dùng tới trang Project sau khi đăng nhập thành công
+                    return RedirectToAction("Index", "Projects");
                 }
                 else
                 {
-                    // Nếu không tìm thấy người dùng, hiển thị lỗi
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    // Thêm thông báo lỗi khi mật khẩu không chính xác
+                    ModelState.AddModelError("", "Password is incorrect.");
                 }
             }
-
-            // Trả lại view với model đã nhập nếu có lỗi
-            return View(model);
+            else
+            {
+                // Thêm thông báo lỗi khi không tìm thấy username
+                ModelState.AddModelError("", "Username does not exist.");
+            }
         }
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Logout()
+    {
+        // Đăng xuất người dùng
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction("Login", "Account");
+    }
+
+    private bool VerifyPassword(string password, string passwordHash)
+    {
+        // Thực hiện hash password và so sánh với passwordHash từ DB
+        // Đây chỉ là mô tả, bạn cần tích hợp với hàm hash thực tế.
+        return password == passwordHash; // Thay bằng logic hash thực tế
     }
 }

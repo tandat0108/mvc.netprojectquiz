@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization; // Import namespace cho [Authorize]
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProjectQuiz.Data;
 
 namespace ProjectQuiz.Controllers
 {
+    [Authorize] // Áp dụng [Authorize] cho tất cả các hành động trong controller này
     public class ProjectsController : Controller
     {
         private readonly QuizzDbContext _context;
@@ -21,8 +23,14 @@ namespace ProjectQuiz.Controllers
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-            var quizzDbContext = _context.Projects.Include(p => p.User);
-            return View(await quizzDbContext.ToListAsync());
+       var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Chuyển đổi UserId từ string sang int
+var projects = _context.Projects
+    .Include(p => p.User)
+    .Where(p => p.UserId == userId); // Chỉ lấy các dự án của người dùng đã đăng nhập
+
+return View(await projects.ToListAsync());
+
+
         }
 
         // GET: Projects/Details/5
@@ -47,24 +55,23 @@ namespace ProjectQuiz.Controllers
         // GET: Projects/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
         // POST: Projects/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,UserId,IntroductionVideoUrl,CreatedDate,LastUpdatedDate,Status")] Project project)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,IntroductionVideoUrl,CreatedDate,LastUpdatedDate,Status")] Project project)
         {
             if (ModelState.IsValid)
             {
+                // Chuyển đổi UserId từ string sang int
+                project.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Gán UserId cho dự án mới
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", project.UserId);
+
             return View(project);
         }
 
@@ -81,16 +88,13 @@ namespace ProjectQuiz.Controllers
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", project.UserId);
             return View(project);
         }
 
         // POST: Projects/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,UserId,IntroductionVideoUrl,CreatedDate,LastUpdatedDate,Status")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,IntroductionVideoUrl,CreatedDate,LastUpdatedDate,Status")] Project project)
         {
             if (id != project.Id)
             {
@@ -117,7 +121,6 @@ namespace ProjectQuiz.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", project.UserId);
             return View(project);
         }
 

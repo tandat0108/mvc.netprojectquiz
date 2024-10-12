@@ -52,14 +52,14 @@
 
                 <div class="form-group">
                     <label class="control-label">Correct Answer</label>
-                    <select class="form-control" asp-for="IsCorrect">
-                        <option value="0">Option 1</option>
-                        <option value="1">Option 2</option>
-                        <option value="2">Option 3</option>
-                        <option value="3">Option 4</option>
+                    <select class="form-control" name="correctAnswer">
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                        <option value="4">Option 4</option>
                     </select>
                 </div>
-            </div>
+
 
             <!-- True/False Options -->
             <div id="trueFalseOption" style="display:none;">
@@ -84,17 +84,22 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script>
         document.getElementById('questionTypeSelect').addEventListener('change', function () {
             var selectedValue = this.value;
+            var multipleChoiceOptions = document.getElementById('multipleChoiceOptions');
+            var trueFalseOption = document.getElementById('trueFalseOption');
+
             if (selectedValue === 'multiple-choice') {
-                document.getElementById('multipleChoiceOptions').style.display = 'block';
-                document.getElementById('trueFalseOption').style.display = 'none';
+                multipleChoiceOptions.style.display = 'block';
+                trueFalseOption.style.display = 'none';
             } else if (selectedValue === 'true-false') {
-                document.getElementById('multipleChoiceOptions').style.display = 'none';
-                document.getElementById('trueFalseOption').style.display = 'block';
+                multipleChoiceOptions.style.display = 'none';
+                trueFalseOption.style.display = 'block';
             }
         });
 

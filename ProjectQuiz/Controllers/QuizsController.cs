@@ -54,25 +54,25 @@ namespace ProjectQuiz.Controllers
         // POST: Quizs/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("QuizId,Title,ProjectId,QuestionType,QuestionText,IsCorrect,Answers")] Quiz quiz, string[] Answers)
+        public async Task<IActionResult> Create([Bind("QuizId,Title,ProjectId,QuestionType,QuestionText,IsCorrect,Answers")] Quiz quiz, string[] Answers, int correctAnswer)
         {
             if (ModelState.IsValid)
             {
                 if (quiz.QuestionType == "multiple-choice")
                 {
-                    // Nối các câu trả lời của câu trắc nghiệm thành chuỗi cách nhau bằng dấu phẩy
+                    // Nối các câu trả lời thành một chuỗi với dấu phẩy
                     quiz.Answers = string.Join(",", Answers);
+
+                    // Lưu chỉ mục của đáp án đúng
+                    quiz.IsCorrect = correctAnswer;
                 }
                 else if (quiz.QuestionType == "true-false")
                 {
-                    // Xóa câu trả lời cho câu hỏi True/False vì không cần thiết
+                    // Với câu hỏi True/False, chỉ cần lưu giá trị IsCorrect đã nhận từ form
                     quiz.Answers = "";
-
-                    // Giá trị IsCorrect đã được gán thông qua form (1 cho True, 0 cho False)
-                    // Không cần thay đổi gì thêm
                 }
 
-                // Lưu vào cơ sở dữ liệu
+                // Lưu dữ liệu vào cơ sở dữ liệu
                 _context.Add(quiz);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -81,6 +81,7 @@ namespace ProjectQuiz.Controllers
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Id", quiz.ProjectId);
             return View(quiz);
         }
+
 
         // GET: Quizs/Edit/5
         public async Task<IActionResult> Edit(int? id)

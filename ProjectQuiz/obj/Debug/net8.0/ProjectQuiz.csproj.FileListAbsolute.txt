@@ -256,3 +256,4 @@ C:\Users\ntdat\source\repos\ProjectQuiz\ProjectQuiz\bin\Debug\net8.0\runtimes\wi
 C:\Users\ntdat\source\repos\ProjectQuiz\ProjectQuiz\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll
 C:\Users\ntdat\source\repos\ProjectQuiz\ProjectQuiz\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\ntdat\source\repos\ProjectQuiz\ProjectQuiz\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Windows.Extensions.dll
+C:\Users\ntdat\source\repos\ProjectQuiz\ProjectQuiz\obj\Debug\net8.0\ProjectQuiz.sourcelink.json
