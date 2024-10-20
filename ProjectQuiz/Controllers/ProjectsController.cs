@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization; // Import namespace cho [Authorize]
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectQuiz.Data;
+using ProjectQuiz.Models; // Đảm bảo thêm namespace cho Models
 
 namespace ProjectQuiz.Controllers
 {
@@ -23,14 +24,12 @@ namespace ProjectQuiz.Controllers
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-       var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Chuyển đổi UserId từ string sang int
-var projects = _context.Projects
-    .Include(p => p.User)
-    .Where(p => p.UserId == userId); // Chỉ lấy các dự án của người dùng đã đăng nhập
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Chuyển đổi UserId từ string sang int
+            var projects = _context.Projects
+                .Include(p => p.User)
+                .Where(p => p.UserId == userId); // Chỉ lấy các dự án của người dùng đã đăng nhập
 
-return View(await projects.ToListAsync());
-
-
+            return View(await projects.ToListAsync());
         }
 
         // GET: Projects/Details/5
@@ -49,8 +48,20 @@ return View(await projects.ToListAsync());
                 return NotFound();
             }
 
-            return View(project);
+            // Lưu ProjectId vào TempData
+            TempData["CurrentProjectId"] = id;
+
+            // Lấy danh sách thành viên của dự án
+            var members = await _context.ProjectMembers
+                .Include(pm => pm.User) // Lấy thông tin người dùng
+                .Where(pm => pm.ProjectId == id)
+                .ToListAsync();
+
+            ViewBag.Members = members; // Gán danh sách thành viên vào ViewBag để sử dụng trong view
+
+            return View(project); // Trả về view details
         }
+
 
         // GET: Projects/Create
         public IActionResult Create()
@@ -65,8 +76,8 @@ return View(await projects.ToListAsync());
         {
             if (ModelState.IsValid)
             {
-                // Chuyển đổi UserId từ string sang int
-                project.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Gán UserId cho dự án mới
+                // Gán UserId cho dự án mới
+                project.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -157,6 +168,22 @@ return View(await projects.ToListAsync());
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult AddMember(int id)
+        {
+            var project = _context.Projects.Find(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var users = _context.Users.ToList();
+            ViewBag.Users = users; // Lấy danh sách người dùng
+
+            return View(project); // Trả về view AddMember.cshtml
+        }
+
+
 
         private bool ProjectExists(int id)
         {

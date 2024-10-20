@@ -1,11 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using ProjectQuiz.Data;
+using Newtonsoft.Json; // Đảm bảo rằng bạn đã thêm namespace này
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    {
+        // Cấu hình để bỏ qua vòng lặp tự tham chiếu
+        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+    });
 
 // Thêm DbContext cho ứng dụng, kết nối với cơ sở dữ liệu
 builder.Services.AddDbContext<QuizzDbContext>(options =>
@@ -28,7 +34,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -38,12 +43,22 @@ app.UseStaticFiles();
 app.UseRouting();
 
 // Thêm Authentication Middleware
-app.UseAuthentication(); // Phải có để xử lý xác thực người dùng
+app.UseAuthentication(); // Middleware này phải đứng trước Authorization
 app.UseAuthorization();
 
 // Định tuyến mặc định cho các controller
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+
+    // Thêm route cụ thể cho MembersController nếu cần
+    endpoints.MapControllerRoute(
+        name: "members",
+        pattern: "Member/{action=Index}/{projectId?}",
+        defaults: new { controller = "Members", action = "Index" });
+});
+
 
 app.Run();

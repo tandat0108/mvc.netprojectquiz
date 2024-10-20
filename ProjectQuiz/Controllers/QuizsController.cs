@@ -19,11 +19,20 @@ namespace ProjectQuiz.Controllers
         }
 
         // GET: Quizs
-        public async Task<IActionResult> Index()
+
+        // GET: Quizs
+        public async Task<IActionResult> Index(int id)
         {
-            var quizzDbContext = _context.Quizzes.Include(q => q.Project);
-            return View(await quizzDbContext.ToListAsync());
+            ViewBag.ProjectId = id;  // Gán ProjectId từ URL vào ViewBag
+            var quizzes = await _context.Quizzes
+                .Where(q => q.ProjectId == id)  // Lọc theo ProjectId
+                .ToListAsync();
+
+            return View(quizzes);
         }
+
+
+
 
         // GET: Quizs/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -43,44 +52,61 @@ namespace ProjectQuiz.Controllers
 
             return View(quiz);
         }
-
         // GET: Quizs/Create
-        public IActionResult Create()
+        [HttpGet]
+        public IActionResult Create(int projectId)
         {
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Id");
+            ViewBag.ProjectId = projectId;
             return View();
         }
-
         // POST: Quizs/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("QuizId,Title,ProjectId,QuestionType,QuestionText,IsCorrect,Answers")] Quiz quiz, string[] Answers, int correctAnswer)
+        public async Task<IActionResult> Create([Bind("QuizId,Title,ProjectId,QuestionType,QuestionText,IsCorrect,Answers")] Quiz quiz, string[] Answers, int correctAnswer, int projectId)
         {
+            // Gán giá trị ProjectId từ route nếu cần
+            if (quiz.ProjectId == null || quiz.ProjectId == 0)
+            {
+                quiz.ProjectId = projectId; // Lấy giá trị từ tham số route
+            }
+
             if (ModelState.IsValid)
             {
                 if (quiz.QuestionType == "multiple-choice")
                 {
-                    // Nối các câu trả lời thành một chuỗi với dấu phẩy
                     quiz.Answers = string.Join(",", Answers);
-
-                    // Lưu chỉ mục của đáp án đúng
                     quiz.IsCorrect = correctAnswer;
                 }
                 else if (quiz.QuestionType == "true-false")
                 {
-                    // Với câu hỏi True/False, chỉ cần lưu giá trị IsCorrect đã nhận từ form
-                    quiz.Answers = "";
+                    quiz.Answers = "True,False";  // Tự động gán đáp án True/False
+                    quiz.IsCorrect = correctAnswer == 1 ? 1 : 0; // 1 cho True, 0 cho False
                 }
 
-                // Lưu dữ liệu vào cơ sở dữ liệu
-                _context.Add(quiz);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.Add(quiz);
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    // Log lỗi nếu xảy ra
+                    ModelState.AddModelError("", "Cannot save quiz: " + ex.Message);
+                    return View(quiz);
+                }
+
+                return RedirectToAction(nameof(Index), new { id = quiz.ProjectId });
             }
 
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Id", quiz.ProjectId);
+            // Truyền lại ProjectId để hiển thị lại form khi lỗi
+            ViewBag.ProjectId = quiz.ProjectId;
             return View(quiz);
         }
+
+
+
+
+
 
 
         // GET: Quizs/Edit/5

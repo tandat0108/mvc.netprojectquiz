@@ -28,4 +28,5 @@ public partial class Project
     public virtual ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
 
     public virtual User? User { get; set; }
+
 }

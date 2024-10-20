@@ -11,12 +11,13 @@
                     <a class="nav-link active" asp-action="Details" asp-route-id="@Model.Id">Details</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="Members" asp-route-id="@Model.Id">Members</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/Quizs">Quizzes</a>
+                    <!-- Liên kết tới ProjectMembersController với action Index -->
+                    <a class="nav-link" asp-controller="ProjectMembers" asp-action="Index" asp-route-projectId="@Model.Id">Members</a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Index" asp-controller="Quizs" asp-route-id="@Model.Id">Quizzes</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" asp-action="Results" asp-route-id="@Model.Id">Results</a>
                 </li>
@@ -46,6 +47,9 @@
 
             <h3 class="mt-4">Project Description:</h3>
             <p>@Model.Description</p>
+
+            <!-- Hiển thị ProjectId từ TempData -->
+            <p>Current Project ID: @TempData["CurrentProjectId"]</p>
 
             <div class="actions mt-4">
                 <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-secondary">Edit</a>

@@ -1,39 +1,47 @@
 ﻿@model IEnumerable<ProjectQuiz.Data.User>
 
 @{
-    ViewData["Title"] = "Login";
-    var user = Model.FirstOrDefault(); // Lấy đối tượng User đầu tiên từ danh sách
+    ViewData["Title"] = "Index";
 }
 
-<h1>Login</h1>
+<h1>Index</h1>
 
-@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
-{
-    <div class="alert alert-danger">
-        @ViewBag.ErrorMessage
-    </div>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Username)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PasswordHash)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Role)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PasswordHash)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
 }
-
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Login" method="post">
-            <div class="form-group">
-                <label asp-for="@user.Username" class="control-label"></label>
-                <input asp-for="@user.Username" class="form-control" />
-                <span asp-validation-for="@user.Username" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="@user.PasswordHash" class="control-label">Password</label>
-                <input asp-for="@user.PasswordHash" class="form-control" type="password" />
-                <span asp-validation-for="@user.PasswordHash" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Login</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-@section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
-}
+    </tbody>
+</table>

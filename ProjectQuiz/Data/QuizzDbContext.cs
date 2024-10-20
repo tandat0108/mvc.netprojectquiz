@@ -27,9 +27,6 @@ public partial class QuizzDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=QuizzDB;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -73,7 +70,8 @@ public partial class QuizzDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__ProjectM__3214EC07BE80DD9D");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();  // Thay đổi ở đây
+
             entity.Property(e => e.Role).HasMaxLength(50);
 
             entity.HasOne(d => d.Project).WithMany(p => p.ProjectMembers)
@@ -84,6 +82,7 @@ public partial class QuizzDbContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK__ProjectMe__UserI__4CA06362");
         });
+
 
         modelBuilder.Entity<Quiz>(entity =>
         {

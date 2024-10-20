@@ -11,16 +11,18 @@
             <h2>Quizzes</h2>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" href="/Projects/Details/@Model.FirstOrDefault()?.Project.Id">Project Details</a>
+                    <a class="nav-link active" href="/Projects/Details/@ViewBag.ProjectId">Project Details</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="Members" asp-route-id="@Model.FirstOrDefault()?.Project.Id">Members</a>
+                    <a class="nav-link" asp-action="Members" asp-route-id="@ViewBag.ProjectId">Members</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Quizs">Quizzes</a>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Index" asp-controller="Quizs" asp-route-id="@ViewBag.ProjectId">Quizzes</a>
+              
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="Results" asp-route-id="@Model.FirstOrDefault()?.Project.Id">Results</a>
+                    <a class="nav-link" asp-action="Results" asp-route-id="@ViewBag.ProjectId">Results</a>
                 </li>
             </ul>
         </div>
@@ -29,8 +31,9 @@
         <div class="col-md-9 content">
             <h3>Quiz List</h3>
             <p>
-                <a asp-action="Create" class="btn btn-success">Create New Quiz</a>
+                <a asp-action="Create" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-success">Create New Quiz</a>
             </p>
+            <p>Current Project ID: @ViewBag.ProjectId</p>
 
             <table class="table">
                 <thead>
@@ -49,14 +52,14 @@
                                 <strong>@item.QuestionText</strong>
                             </td>
                             <td>
-                                <!-- Tách các đáp án và hiển thị với ký hiệu A, B, C, D,... -->
+                                <!-- Split answers and display them with labels A, B, C, D, ... -->
                                 <ul>
                                     @{
-                                        var answers = item.Answers.Split(',');  // Tách chuỗi đáp án
-                                        var letters = new[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };  // Ký tự từ A đến H
+                                        var answers = item.Answers.Split(',');
+                                        var letters = new[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
                                         for (int i = 0; i < answers.Length; i++)
                                         {
-                                            var answer = answers[i].Trim();  // Loại bỏ khoảng trắng thừa
+                                            var answer = answers[i].Trim();
                                             if (!string.IsNullOrWhiteSpace(answer))
                                             {
                                                 <li><strong>@letters[i])</strong> @answer</li>
@@ -66,16 +69,23 @@
                                 </ul>
                             </td>
                             <td>
-                                <!-- Hiển thị đáp án đúng theo thứ tự A, B, C, D -->
-                                @{
-                                    var correctAnswerLetter = letters[item.IsCorrect - 1];  // Lấy ký hiệu đáp án đúng
+                                <!-- Display the correct answer based on its position -->
+                                @if (item.IsCorrect > 0 && item.IsCorrect <= letters.Length)
+                                {
+                                    var correctAnswerLetter = letters[item.IsCorrect - 1];
+                                    <strong>Correct Answer: </strong>
+                                    @correctAnswerLetter
                                 }
-                                <strong>Correct Answer: </strong>@correctAnswerLetter
+                                else
+                                {
+                                    <strong>Correct Answer: </strong>
+                                    <!-- Handle cases with invalid IsCorrect value -->
+                                }
                             </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.QuizId">Edit</a> |
-                                <a asp-action="Details" asp-route-id="@item.QuizId">Details</a> |
-                                <a asp-action="Delete" asp-route-id="@item.QuizId">Delete</a>
+                                <a asp-action="Edit" asp-route-id="@item.QuizId" asp-route-projectId="@ViewBag.ProjectId">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.QuizId" asp-route-projectId="@ViewBag.ProjectId">Details</a> |
+                                <a asp-action="Delete" asp-route-id="@item.QuizId" asp-route-projectId="@ViewBag.ProjectId">Delete</a>
                             </td>
                         </tr>
                     }
@@ -97,11 +107,6 @@
         border-radius: 8px;
     }
 
-        .sidebar h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
     .nav-link {
         font-size: 18px;
         margin-bottom: 10px;
@@ -111,17 +116,8 @@
         padding-left: 30px;
     }
 
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .actions {
-        margin-top: 20px;
-    }
-
     .table {
         margin-top: 20px;
     }
 </style>
+

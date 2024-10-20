@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 
 namespace ProjectQuiz.Data;
-
 public partial class ProjectMember
 {
-    public int Id { get; set; }
+    public int Id { get; set; } 
 
     public int? ProjectId { get; set; }
 
