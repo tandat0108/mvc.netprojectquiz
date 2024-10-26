@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization; // Import namespace cho [Authorize]
+using Microsoft.AspNetCore.Authorization; // Import namespace for [Authorize]
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectQuiz.Data;
-using ProjectQuiz.Models; // Đảm bảo thêm namespace cho Models
 
 namespace ProjectQuiz.Controllers
 {
-    [Authorize] // Áp dụng [Authorize] cho tất cả các hành động trong controller này
+    [Authorize] // Apply [Authorize] to all actions in this controller
     public class ProjectsController : Controller
     {
         private readonly QuizzDbContext _context;
@@ -24,12 +23,29 @@ namespace ProjectQuiz.Controllers
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Chuyển đổi UserId từ string sang int
-            var projects = _context.Projects
-                .Include(p => p.User)
-                .Where(p => p.UserId == userId); // Chỉ lấy các dự án của người dùng đã đăng nhập
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            return View(await projects.ToListAsync());
+            // Retrieve role from Claims
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var isAdmin = userRole == "admin"; // Compare with the "admin" string
+
+            // Get the list of projects created by the user
+            var ownerProjects = await _context.Projects
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+
+            // Get the list of projects the user is a member of through ProjectMembers
+            var memberProjects = await _context.ProjectMembers
+                .Include(pm => pm.Project)
+                .Where(pm => pm.UserId == userId)
+                .Select(pm => pm.Project)
+                .ToListAsync();
+
+            ViewBag.OwnerProjects = ownerProjects;
+            ViewBag.MemberProjects = memberProjects;
+            ViewBag.IsAdmin = isAdmin; // Pass isAdmin flag to ViewBag to use in the view
+
+            return View();
         }
 
         // GET: Projects/Details/5
@@ -48,20 +64,19 @@ namespace ProjectQuiz.Controllers
                 return NotFound();
             }
 
-            // Lưu ProjectId vào TempData
+            // Store ProjectId in TempData
             TempData["CurrentProjectId"] = id;
 
-            // Lấy danh sách thành viên của dự án
+            // Get the list of members in the project
             var members = await _context.ProjectMembers
-                .Include(pm => pm.User) // Lấy thông tin người dùng
+                .Include(pm => pm.User) // Include user information
                 .Where(pm => pm.ProjectId == id)
                 .ToListAsync();
 
-            ViewBag.Members = members; // Gán danh sách thành viên vào ViewBag để sử dụng trong view
+            ViewBag.Members = members; // Assign the list of members to ViewBag to use in the view
 
-            return View(project); // Trả về view details
+            return View(project); // Return details view
         }
-
 
         // GET: Projects/Create
         public IActionResult Create()
@@ -76,8 +91,9 @@ namespace ProjectQuiz.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Gán UserId cho dự án mới
+                // Assign UserId to the new project
                 project.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                project.CreatedDate = DateTime.Now; // Set project creation date
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -154,36 +170,34 @@ namespace ProjectQuiz.Controllers
             return View(project);
         }
 
-        // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
+            // Find Project and include related Quizzes and QuizResults
+            var project = await _context.Projects
+                .Include(p => p.Quizzes)
+                    .ThenInclude(q => q.QuizResults) // Include QuizResults related to Quizzes
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (project != null)
             {
+                // Delete all QuizResults related to each Quiz of the Project
+                foreach (var quiz in project.Quizzes)
+                {
+                    _context.QuizResults.RemoveRange(quiz.QuizResults);
+                }
+
+                // Delete all Quizzes related to the Project
+                _context.Quizzes.RemoveRange(project.Quizzes);
+
+                // Delete Project
                 _context.Projects.Remove(project);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
-        public IActionResult AddMember(int id)
-        {
-            var project = _context.Projects.Find(id);
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            var users = _context.Users.ToList();
-            ViewBag.Users = users; // Lấy danh sách người dùng
-
-            return View(project); // Trả về view AddMember.cshtml
-        }
-
-
 
         private bool ProjectExists(int id)
         {

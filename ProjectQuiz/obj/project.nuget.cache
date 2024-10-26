@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "yIpjoXVyvlM=",
+  "dgSpecHash": "DZMgffAAVgE=",
   "success": true,
   "projectFilePath": "C:\\Users\\ntdat\\source\\repos\\ProjectQuiz\\ProjectQuiz\\ProjectQuiz.csproj",
   "expectedPackageFiles": [
@@ -107,6 +107,8 @@
     "C:\\Users\\ntdat\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "C:\\Users\\ntdat\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "C:\\Users\\ntdat\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
+    "C:\\Users\\ntdat\\.nuget\\packages\\microsoft.testing.extensions.hotreload\\1.4.1\\microsoft.testing.extensions.hotreload.1.4.1.nupkg.sha512",
+    "C:\\Users\\ntdat\\.nuget\\packages\\microsoft.testing.platform\\1.4.1\\microsoft.testing.platform.1.4.1.nupkg.sha512",
     "C:\\Users\\ntdat\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.21.0\\microsoft.visualstudio.azure.containers.tools.targets.1.21.0.nupkg.sha512",
     "C:\\Users\\ntdat\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration\\8.0.6\\microsoft.visualstudio.web.codegeneration.8.0.6.nupkg.sha512",
     "C:\\Users\\ntdat\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration.core\\8.0.6\\microsoft.visualstudio.web.codegeneration.core.8.0.6.nupkg.sha512",

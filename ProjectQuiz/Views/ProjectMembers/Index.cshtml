@@ -1,38 +1,49 @@
 ﻿@model IEnumerable<ProjectQuiz.Data.ProjectMember>
 
 @{
-    ViewData["Title"] = "Thành viên của dự án";
+    ViewData["Title"] = "Project Members";
 }
 
-<h2>Thành viên của dự án</h2>
+<h2>Project Members</h2>
 
-<p>
-    <a asp-action="Create" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-primary">Thêm thành viên mới</a>
-</p>
+@if (!(bool)ViewBag.IsProjectOwner)
+{
+    <div class="alert alert-warning">
+        You are not the project owner. You cannot add or manage members.
+    </div>
+}
+else
+{
+    <p>
+        <a asp-action="Create" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-primary">Add New Member</a>
+    </p>
+}
 
 <table class="table">
     <thead>
         <tr>
-            <th>Tên người dùng</th>
-            <th>Vai trò</th>
-            <th>Hành động</th>
+            <th>Username</th>
+            <th>Role</th>
+            @if ((bool)ViewBag.IsProjectOwner)
+            {
+                <th>Actions</th>
+            }
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.User.Username) <!-- Hiển thị tên người dùng -->
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Role) <!-- Hiển thị vai trò của người dùng -->
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Sửa</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Chi tiết</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Xóa</a>
-                </td>
+                <td>@item.User.Username</td>
+                <td>@item.Role</td>
+                @if ((bool)ViewBag.IsProjectOwner)
+                {
+                    <td>
+                        <form asp-action="Delete" asp-route-id="@item.Id" asp-route-projectId="@ViewBag.ProjectId" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                }
             </tr>
         }
     </tbody>

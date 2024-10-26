@@ -19,14 +19,13 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
-            <!-- Hidden field to store ProjectId -->
             <input type="hidden" asp-for="ProjectId" value="@ViewBag.ProjectId" />
 
             <div class="form-group">
                 <label asp-for="QuestionType" class="control-label">Question Type</label>
                 <select asp-for="QuestionType" class="form-control" id="questionTypeSelect">
                     <option value="multiple-choice">Multiple Choice</option>
-                    <option value="true-false">True/False</option>
+                    <option value="short-answer">Short Answer</option>
                 </select>
             </div>
 
@@ -36,8 +35,7 @@
                 <span asp-validation-for="QuestionText" class="text-danger"></span>
             </div>
 
-            <!-- Multiple Choice Options -->
-            <div id="multipleChoiceOptions" style="display:none;">
+            <div id="multipleChoiceOptions" style="display: none;">
                 <div class="form-group">
                     <label class="control-label">Multiple Choice Options</label>
                     <div id="multipleChoiceList">
@@ -50,7 +48,7 @@
 
                 <div class="form-group">
                     <label class="control-label">Correct Answer</label>
-                    <select class="form-control" name="correctAnswer">
+                    <select class="form-control" name="correctAnswerMCQ">
                         <option value="1">Option 1</option>
                         <option value="2">Option 2</option>
                         <option value="3">Option 3</option>
@@ -59,49 +57,40 @@
                 </div>
             </div>
 
-            <!-- True/False Options -->
-            <div id="trueFalseOptions" style="display:none;">
+            <!-- Short Answer Option -->
+            <div id="shortAnswerOption" style="display:none;">
                 <div class="form-group">
-                    <label class="control-label">Select Correct Answer</label>
-                    <select class="form-control" name="correctAnswer">
-                        <option value="1">True</option>
-                        <option value="0">False</option>
-                    </select>
+                    <label class="control-label">Correct Answer</label>
+                    <input type="text" class="form-control" name="CorrectAnswerSAQ" placeholder="Enter the correct answer" />
                 </div>
             </div>
-
-
 
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
+
+        @section Scripts {
+            @Html.Partial("_ValidationScriptsPartial")
+
+            <script>
+                document.getElementById('questionTypeSelect').addEventListener('change', function () {
+                    var selectedValue = this.value;
+                    var multipleChoiceOptions = document.getElementById('multipleChoiceOptions');
+                    var shortAnswerOption = document.getElementById('shortAnswerOption');
+
+                    if (selectedValue === 'multiple-choice') {
+                        multipleChoiceOptions.style.display = 'block';
+                        shortAnswerOption.style.display = 'none';
+                    } else if (selectedValue === 'short-answer') {
+                        multipleChoiceOptions.style.display = 'none';
+                        shortAnswerOption.style.display = 'block';
+                    }
+                });
+
+                // Trigger change event on page load to show/hide correct sections
+                document.getElementById('questionTypeSelect').dispatchEvent(new Event('change'));
+            </script>
+        }
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @Html.Partial("_ValidationScriptsPartial")
-
-    <script>
-        document.getElementById('questionTypeSelect').addEventListener('change', function () {
-            var selectedValue = this.value;
-            var multipleChoiceOptions = document.getElementById('multipleChoiceOptions');
-            var trueFalseOptions = document.getElementById('trueFalseOptions');
-
-            if (selectedValue === 'multiple-choice') {
-                multipleChoiceOptions.style.display = 'block';
-                trueFalseOptions.style.display = 'none';
-            } else if (selectedValue === 'true-false') {
-                multipleChoiceOptions.style.display = 'none';
-                trueFalseOptions.style.display = 'block';
-            }
-        });
-
-        // Trigger change event on page load to show/hide correct sections
-        document.getElementById('questionTypeSelect').dispatchEvent(new Event('change'));
-    </script>
-}

@@ -11,7 +11,7 @@
                     <a class="nav-link active" asp-action="Details" asp-route-id="@Model.Id">Details</a>
                 </li>
                 <li class="nav-item">
-                    <!-- Liên kết tới ProjectMembersController với action Index -->
+                   
                     <a class="nav-link" asp-controller="ProjectMembers" asp-action="Index" asp-route-projectId="@Model.Id">Members</a>
                 </li>
 
@@ -19,15 +19,22 @@
                     <a class="nav-link" asp-action="Index" asp-controller="Quizs" asp-route-id="@Model.Id">Quizzes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="Results" asp-route-id="@Model.Id">Results</a>
+                    <a class="nav-link" asp-action="QuizResults" asp-controller="Quizs" asp-route-id="@Model.Id">Results</a>
                 </li>
             </ul>
         </div>
 
         <div class="col-md-9 content">
+            
+            @if (TempData["QuizCompleted"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["QuizCompleted"]
+                </div>
+            }
+
             <div class="header">
                 <h3>Introduction Video:</h3>
-                <button class="btn btn-primary float-right">Publish Project</button>
             </div>
 
             @if (!string.IsNullOrEmpty(Model.IntroductionVideoUrl))
@@ -48,7 +55,6 @@
             <h3 class="mt-4">Project Description:</h3>
             <p>@Model.Description</p>
 
-            <!-- Hiển thị ProjectId từ TempData -->
             <p>Current Project ID: @TempData["CurrentProjectId"]</p>
 
             <div class="actions mt-4">

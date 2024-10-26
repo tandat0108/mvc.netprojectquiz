@@ -26,6 +26,14 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\ntdat\source\repos\ProjectQuiz\ProjectQuiz
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/ntdat/source/repos/ProjectQuiz/ProjectQuiz/Views/Account/ChangePassword.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxDaGFuZ2VQYXNzd29yZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ntdat/source/repos/ProjectQuiz/ProjectQuiz/Views/Account/ChangePasswordSuccess.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxDaGFuZ2VQYXNzd29yZFN1Y2Nlc3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/ntdat/source/repos/ProjectQuiz/ProjectQuiz/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -44,6 +52,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/ntdat/source/repos/ProjectQuiz/ProjectQuiz/Views/ProjectMembers/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvamVjdE1lbWJlcnNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ntdat/source/repos/ProjectQuiz/ProjectQuiz/Views/ProjectMembers/DeleteConfirmation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvamVjdE1lbWJlcnNcRGVsZXRlQ29uZmlybWF0aW9uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/ntdat/source/repos/ProjectQuiz/ProjectQuiz/Views/ProjectMembers/Details.cshtml]
@@ -96,6 +108,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/ntdat/source/repos/ProjectQuiz/ProjectQuiz/Views/Quizs/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVpenNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ntdat/source/repos/ProjectQuiz/ProjectQuiz/Views/Quizs/QuizResults.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVpenNcUXVpelJlc3VsdHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ntdat/source/repos/ProjectQuiz/ProjectQuiz/Views/Quizs/TakeAllQuizzes.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVpenNcVGFrZUFsbFF1aXp6ZXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/ntdat/source/repos/ProjectQuiz/ProjectQuiz/Views/Shared/Error.cshtml]

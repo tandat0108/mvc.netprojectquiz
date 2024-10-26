@@ -48,21 +48,27 @@ namespace ProjectQuiz.Controllers
             return View();
         }
 
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Username,PasswordHash,Role")] User user)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View(user);
             }
-            return View(user);
+
+            // Đảm bảo chỉ chấp nhận giá trị 'admin' hoặc 'member'
+            if (user.Role != "admin" && user.Role != "member")
+            {
+                ModelState.AddModelError("Role", "Invalid role selected.");
+                return View(user);
+            }
+
+            _context.Add(user);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Login", "Account");
         }
+
 
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)

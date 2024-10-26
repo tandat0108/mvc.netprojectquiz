@@ -1,38 +1,93 @@
-﻿@model IEnumerable<ProjectQuiz.Data.Project>
+﻿@using System.Security.Claims
+@model IEnumerable<ProjectQuiz.Data.Project>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Your Projects";
+
+    var ownerProjects = ViewBag.OwnerProjects as IEnumerable<ProjectQuiz.Data.Project>;
+    var memberProjects = ViewBag.MemberProjects as IEnumerable<ProjectQuiz.Data.Project>;
+    var isAdmin = ViewBag.IsAdmin as bool? ?? false; 
 }
 
-<h1>Projects</h1>
+<h1>Your Projects</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-success">Create New</a>
-</p>
+<!-- Button to create a new project - Only visible to admins -->
+@if (ViewBag.IsAdmin)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Create New Project</a>
+    </p>
+}
 
+@if (ViewBag.IsAdmin)
+{
+    <h3>Projects You Created</h3>
+
+    <div class="row">
+        @if (ownerProjects != null && ownerProjects.Any())
+        {
+            @foreach (var item in ownerProjects)
+            {
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
+                            <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+                            <p><strong>Status:</strong> @Html.DisplayFor(modelItem => item.Status)</p>
+                            <p><strong>Created Date:</strong> @Html.DisplayFor(modelItem => item.CreatedDate)</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    @if (isAdmin)
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>You have not created any projects.</p>
+        }
+
+    </div>
+}
+
+<!-- Display projects the user has been added to -->
+<h3>Projects You Are Added To</h3>
 <div class="row">
-    @foreach (var item in Model)
+    @if (memberProjects != null && memberProjects.Any())
     {
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
-                    <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
-                    <p><strong>Status:</strong> @Html.DisplayFor(modelItem => item.Status)</p>
-                    <p><strong>Created Date:</strong> @Html.DisplayFor(modelItem => item.CreatedDate)</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Details</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+        @foreach (var item in memberProjects)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
+                        <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+                        <p><strong>Status:</strong> @Html.DisplayFor(modelItem => item.Status)</p>
+                        <p><strong>Created Date:</strong> @Html.DisplayFor(modelItem => item.CreatedDate)</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+    }
+    else
+    {
+        <p>You have not been added to any projects.</p>
     }
 </div>
 
+<!-- Styles -->
 <style>
     .card {
         margin-bottom: 20px;

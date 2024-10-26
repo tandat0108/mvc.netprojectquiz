@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProjectQuiz.Data;
+using ProjectQuiz.ViewModels;
 
 namespace ProjectQuiz.Controllers
 {
@@ -18,23 +20,25 @@ namespace ProjectQuiz.Controllers
             _context = context;
         }
 
-        // GET: Quizs
-
-        // GET: Quizs
         public async Task<IActionResult> Index(int id)
         {
-            ViewBag.ProjectId = id;  // Gán ProjectId từ URL vào ViewBag
+            ViewBag.ProjectId = id;
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.ProjectOwnerId = project.UserId;
+
             var quizzes = await _context.Quizzes
-                .Where(q => q.ProjectId == id)  // Lọc theo ProjectId
+                .Where(q => q.ProjectId == id)
                 .ToListAsync();
 
             return View(quizzes);
         }
 
-
-
-
-        // GET: Quizs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -52,64 +56,67 @@ namespace ProjectQuiz.Controllers
 
             return View(quiz);
         }
-        // GET: Quizs/Create
+
         [HttpGet]
         public IActionResult Create(int projectId)
         {
             ViewBag.ProjectId = projectId;
             return View();
         }
-        // POST: Quizs/Create
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("QuizId,Title,ProjectId,QuestionType,QuestionText,IsCorrect,Answers")] Quiz quiz, string[] Answers, int correctAnswer, int projectId)
+        public async Task<IActionResult> Create([Bind("QuizId,Title,ProjectId,QuestionType,QuestionText")] Quiz quiz, string[] Answers, string correctAnswerMCQ, string CorrectAnswerSAQ, int projectId)
         {
-            // Gán giá trị ProjectId từ route nếu cần
-            if (quiz.ProjectId == null || quiz.ProjectId == 0)
+            if (quiz.ProjectId == 0)
             {
-                quiz.ProjectId = projectId; // Lấy giá trị từ tham số route
+                quiz.ProjectId = projectId;
             }
 
-            if (ModelState.IsValid)
+            Console.WriteLine($"QuestionType: {quiz.QuestionType}");
+            Console.WriteLine($"Answers Input: {string.Join(", ", Answers)}");
+            Console.WriteLine($"CorrectAnswerMCQ Input: {correctAnswerMCQ}");
+            Console.WriteLine($"CorrectAnswerSAQ Input: {CorrectAnswerSAQ}");
+
+            if (true)
             {
                 if (quiz.QuestionType == "multiple-choice")
                 {
                     quiz.Answers = string.Join(",", Answers);
-                    quiz.IsCorrect = correctAnswer;
+                    quiz.IsCorrect = correctAnswerMCQ;
+                    quiz.CorrectAnswer = null;
                 }
-                else if (quiz.QuestionType == "true-false")
+                else if (quiz.QuestionType == "short-answer")
                 {
-                    quiz.Answers = "True,False";  // Tự động gán đáp án True/False
-                    quiz.IsCorrect = correctAnswer == 1 ? 1 : 0; // 1 cho True, 0 cho False
+                    if (string.IsNullOrWhiteSpace(CorrectAnswerSAQ))
+                    {
+                        ModelState.AddModelError("CorrectAnswerSAQ", "Correct answer cannot be empty.");
+                        return View(quiz);
+                    }
+                    quiz.CorrectAnswer = CorrectAnswerSAQ;
+                    quiz.IsCorrect = null;
                 }
 
                 try
                 {
                     _context.Add(quiz);
                     await _context.SaveChangesAsync();
+                    Console.WriteLine("Quiz saved successfully.");
                 }
                 catch (Exception ex)
                 {
-                    // Log lỗi nếu xảy ra
-                    ModelState.AddModelError("", "Cannot save quiz: " + ex.Message);
+                    Console.WriteLine($"Error saving quiz: {ex.Message}");
                     return View(quiz);
                 }
 
                 return RedirectToAction(nameof(Index), new { id = quiz.ProjectId });
             }
 
-            // Truyền lại ProjectId để hiển thị lại form khi lỗi
             ViewBag.ProjectId = quiz.ProjectId;
             return View(quiz);
         }
 
-
-
-
-
-
-
-        // GET: Quizs/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -122,14 +129,14 @@ namespace ProjectQuiz.Controllers
             {
                 return NotFound();
             }
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Id", quiz.ProjectId);
+
+            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Id", quiz.ProjectId);
             return View(quiz);
         }
 
-        // POST: Quizs/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("QuizId,Title,ProjectId,QuestionType,QuestionText,IsCorrect,Answers")] Quiz quiz, string[] Answers)
+        public async Task<IActionResult> Edit(int id, [Bind("QuizId,Title,ProjectId,QuestionType,QuestionText,CorrectAnswer,Answers")] Quiz quiz, string[] Answers)
         {
             if (id != quiz.QuizId)
             {
@@ -142,13 +149,12 @@ namespace ProjectQuiz.Controllers
                 {
                     if (quiz.QuestionType == "multiple-choice")
                     {
-                        // Nối các câu trả lời của câu trắc nghiệm thành chuỗi cách nhau bằng dấu phẩy
                         quiz.Answers = string.Join(",", Answers);
                     }
-                    else if (quiz.QuestionType == "true-false")
+                    else if (quiz.QuestionType == "short-answer")
                     {
-                        // Xóa câu trả lời cho câu hỏi True/False vì không cần thiết
-                        quiz.Answers = "";
+                        quiz.Answers = null;
+                        quiz.CorrectAnswer = quiz.CorrectAnswer;
                     }
 
                     _context.Update(quiz);
@@ -167,11 +173,11 @@ namespace ProjectQuiz.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Id", quiz.ProjectId);
+
+            ViewBag.ProjectId = quiz.ProjectId;
             return View(quiz);
         }
 
-        // GET: Quizs/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -182,6 +188,7 @@ namespace ProjectQuiz.Controllers
             var quiz = await _context.Quizzes
                 .Include(q => q.Project)
                 .FirstOrDefaultAsync(m => m.QuizId == id);
+
             if (quiz == null)
             {
                 return NotFound();
@@ -190,19 +197,166 @@ namespace ProjectQuiz.Controllers
             return View(quiz);
         }
 
-        // POST: Quizs/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteQuiz(int id, int projectId)
         {
             var quiz = await _context.Quizzes.FindAsync(id);
+
             if (quiz != null)
             {
+                var quizResults = _context.QuizResults.Where(qr => qr.QuizId == id);
+                _context.QuizResults.RemoveRange(quizResults);
+
                 _context.Quizzes.Remove(quiz);
+                await _context.SaveChangesAsync();
+
+                TempData["DeleteMessage"] = $"Quiz '{quiz.Title}' has been successfully deleted.";
             }
 
+            return RedirectToAction("Index", new { id = projectId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TakeAllQuizzes(int id)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var hasResults = await _context.QuizResults
+                .Where(qr => qr.Quiz.ProjectId == id && qr.UserId == userId)
+                .AnyAsync();
+
+            if (hasResults)
+            {
+                TempData["RetakeConfirmation"] = "You have already completed this quiz.";
+            }
+
+            var quizzes = await _context.Quizzes
+                .Where(q => q.ProjectId == id)
+                .ToListAsync();
+
+            ViewBag.ProjectId = id;
+            return View("TakeAllQuizzes", quizzes);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitAllQuizzes(Dictionary<int, string> selectedAnswers)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            decimal totalScore = 0;
+            var results = new List<QuizResult>();
+
+            foreach (var quizId in selectedAnswers.Keys)
+            {
+                var quiz = await _context.Quizzes.AsNoTracking().FirstOrDefaultAsync(q => q.QuizId == quizId);
+                if (quiz == null)
+                {
+                    return NotFound();
+                }
+
+                var selectedAnswer = selectedAnswers[quizId];
+                bool isCorrect = false;
+
+                if (quiz.QuestionType == "multiple-choice" && int.TryParse(selectedAnswer, out int answerIndex))
+                {
+                    selectedAnswer = (answerIndex + 1).ToString();
+                    isCorrect = selectedAnswer == quiz.IsCorrect;
+                }
+                else if (quiz.QuestionType == "short-answer")
+                {
+                    isCorrect = selectedAnswer.Trim().Equals(quiz.CorrectAnswer?.Trim(), StringComparison.OrdinalIgnoreCase);
+                }
+
+                totalScore += isCorrect ? 10 : 0;
+
+                var result = new QuizResult
+                {
+                    UserId = userId,
+                    QuizId = quiz.QuizId,
+                    Score = isCorrect ? 10 : 0,
+                    SelectedAnswer = selectedAnswer,
+                    Comment = isCorrect ? "Correct" : "Incorrect"
+                };
+
+                results.Add(result);
+            }
+
+            var quizIds = selectedAnswers.Keys.ToList();
+            var oldResults = _context.QuizResults.Where(qr => qr.UserId == userId && quizIds.Contains(qr.QuizId)).ToList();
+            _context.QuizResults.RemoveRange(oldResults);
+            await _context.QuizResults.AddRangeAsync(results);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            TempData["QuizCompleted"] = "You have completed the quiz.";
+            var firstQuiz = await _context.Quizzes.FirstOrDefaultAsync(q => q.QuizId == quizIds.First());
+            return firstQuiz != null
+                ? RedirectToAction("Details", "Projects", new { id = firstQuiz.ProjectId })
+                : RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmRetake(int id)
+        {
+            TempData.Remove("RetakeConfirmation");
+            return RedirectToAction("TakeAllQuizzes", new { id = id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> QuizResults(int id)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            bool isAdmin = project.UserId == userId;
+
+            if (isAdmin)
+            {
+                var userScores = await _context.QuizResults
+                    .Include(qr => qr.User)
+                    .Where(qr => qr.Quiz.ProjectId == id)
+                    .GroupBy(qr => qr.User)
+                    .Select(g => new
+                    {
+                        User = g.Key,
+                        TotalScore = g.Sum(qr => qr.Score)
+                    })
+                    .ToListAsync();
+
+                ViewBag.UserScores = userScores;
+                ViewBag.IsAdmin = true;
+            }
+            else
+            {
+                var results = await _context.QuizResults
+                    .Where(qr => qr.UserId == userId && qr.Quiz.ProjectId == id)
+                    .Include(qr => qr.Quiz)
+                    .ToListAsync();
+
+                if (!results.Any())
+                {
+                    ViewBag.NoResults = "You haven't taken the quiz yet.";
+                }
+                else
+                {
+                    ViewBag.TotalScore = results.Sum(qr => qr.Score);
+                    ViewBag.UserResults = results.Select(qr => new QuizResultViewModel
+                    {
+                        QuizResult = qr,
+                        SelectedAnswer = qr.SelectedAnswer
+                    }).ToList();
+                }
+
+                ViewBag.IsAdmin = false;
+            }
+
+            return View();
         }
 
         private bool QuizExists(int id)

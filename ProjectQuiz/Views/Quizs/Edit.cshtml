@@ -1,8 +1,10 @@
 ﻿@model ProjectQuiz.Data.Quiz
 
 <h1>Edit Quiz</h1>
+<form asp-action="Edit" asp-route-id="@Model.QuizId" method="post">
 
-<form asp-action="EditQuiz">
+    @Html.AntiForgeryToken() <!-- Token chống tấn công CSRF -->
+
     <div class="form-group">
         <label asp-for="Title" class="control-label"></label>
         <input asp-for="Title" class="form-control" />
@@ -22,19 +24,63 @@
 
     <div class="form-group">
         <label asp-for="QuestionType" class="control-label">Question Type</label>
-        <select asp-for="QuestionType" class="form-control">
+        <select asp-for="QuestionType" class="form-control" id="questionTypeSelect">
             <option value="multiple-choice">Multiple Choice</option>
-            <option value="true-false">True/False</option>
+            <option value="short-answer">Short Answer</option>
         </select>
     </div>
 
-    <div class="form-group">
-        <label asp-for="IsCorrect" class="control-label">Correct Answer</label>
-        <input asp-for="IsCorrect" class="form-control" />
-        <span asp-validation-for="IsCorrect" class="text-danger"></span>
+    <!-- Multiple Choice Options -->
+    <div id="multipleChoiceOptions" style="display:none;">
+        <div class="form-group">
+            <label class="control-label">Multiple Choice Options</label>
+            <input type="text" class="form-control mt-2" name="Answers[]" value="@Model.Answers?.Split(',')[0]" placeholder="Enter option 1" />
+            <input type="text" class="form-control mt-2" name="Answers[]" value="@Model.Answers?.Split(',')[1]" placeholder="Enter option 2" />
+            <input type="text" class="form-control mt-2" name="Answers[]" value="@Model.Answers?.Split(',')[2]" placeholder="Enter option 3" />
+            <input type="text" class="form-control mt-2" name="Answers[]" value="@Model.Answers?.Split(',')[3]" placeholder="Enter option 4" />
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Correct Answer</label>
+            <select class="form-control" name="correctAnswer">
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+                <option value="3">Option 3</option>
+                <option value="4">Option 4</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Short Answer Option -->
+    <div id="shortAnswerOption" style="display:none;">
+        <div class="form-group">
+            <label class="control-label">Correct Answer</label>
+            <input type="text" class="form-control" name="CorrectAnswer" placeholder="Enter the correct answer" />
+        </div>
     </div>
 
     <div class="form-group">
         <input type="submit" value="Save" class="btn btn-primary" />
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        document.getElementById('questionTypeSelect').addEventListener('change', function () {
+            var selectedValue = this.value;
+            var multipleChoiceOptions = document.getElementById('multipleChoiceOptions');
+            var shortAnswerOption = document.getElementById('shortAnswerOption');
+
+            if (selectedValue === 'multiple-choice') {
+                multipleChoiceOptions.style.display = 'block';
+                shortAnswerOption.style.display = 'none';
+            } else if (selectedValue === 'short-answer') {
+                multipleChoiceOptions.style.display = 'none';
+                shortAnswerOption.style.display = 'block';
+            }
+        });
+
+        // Trigger change event on page load to show/hide correct sections
+        document.getElementById('questionTypeSelect').dispatchEvent(new Event('change'));
+    </script>
+}

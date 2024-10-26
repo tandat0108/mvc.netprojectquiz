@@ -12,8 +12,8 @@ using ProjectQuiz.Data;
 namespace ProjectQuiz.Migrations
 {
     [DbContext(typeof(QuizzDbContext))]
-    [Migration("20241016140926_UpdateProjectMembers")]
-    partial class UpdateProjectMembers
+    [Migration("20241026112819_CascadeDeleteForProjectQuizzes")]
+    partial class CascadeDeleteForProjectQuizzes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -97,20 +97,22 @@ namespace ProjectQuiz.Migrations
             modelBuilder.Entity("ProjectQuiz.Data.ProjectMember", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProjectId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<string>("Role")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id")
-                        .HasName("PK__ProjectM__3214EC07BE80DD9D");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 
@@ -128,11 +130,13 @@ namespace ProjectQuiz.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuizId"));
 
                     b.Property<string>("Answers")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IsCorrect")
-                        .HasColumnType("int");
+                    b.Property<string>("CorrectAnswer")
+                        .HasColumnType("text");
+
+                    b.Property<string>("IsCorrect")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ProjectId")
                         .HasColumnType("int");
@@ -163,22 +167,29 @@ namespace ProjectQuiz.Migrations
             modelBuilder.Entity("ProjectQuiz.Data.QuizResult", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
                         .HasColumnType("text");
 
-                    b.Property<int?>("QuizId")
+                    b.Property<int>("QuizId")
                         .HasColumnType("int");
 
                     b.Property<decimal?>("Score")
                         .HasColumnType("decimal(5, 2)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<string>("SelectedAnswer")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__QuizResu__3214EC07FB98EAE4");
+                        .HasName("PK__QuizResu__3214EC077AC4B913");
 
                     b.HasIndex("QuizId");
 
@@ -213,6 +224,33 @@ namespace ProjectQuiz.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("ProjectQuiz.Data.UserQuiz", b =>
+                {
+                    b.Property<int>("UserQuizId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserQuizId"));
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("TotalScore")
+                        .HasColumnType("decimal(5, 2)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserQuizId")
+                        .HasName("PK__UserQuiz__20FA63870534A927");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserQuiz", (string)null);
+                });
+
             modelBuilder.Entity("ProjectQuiz.Data.Project", b =>
                 {
                     b.HasOne("ProjectQuiz.Data.User", "User")
@@ -245,12 +283,16 @@ namespace ProjectQuiz.Migrations
                     b.HasOne("ProjectQuiz.Data.Project", "Project")
                         .WithMany("ProjectMembers")
                         .HasForeignKey("ProjectId")
-                        .HasConstraintName("FK__ProjectMe__Proje__4BAC3F29");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ProjectMembers_Projects");
 
                     b.HasOne("ProjectQuiz.Data.User", "User")
                         .WithMany("ProjectMembers")
                         .HasForeignKey("UserId")
-                        .HasConstraintName("FK__ProjectMe__UserI__4CA06362");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ProjectMembers_Users");
 
                     b.Navigation("Project");
 
@@ -262,6 +304,7 @@ namespace ProjectQuiz.Migrations
                     b.HasOne("ProjectQuiz.Data.Project", "Project")
                         .WithMany("Quizzes")
                         .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK__Quizzes__Project__3C69FB99");
 
                     b.Navigation("Project");
@@ -272,14 +315,35 @@ namespace ProjectQuiz.Migrations
                     b.HasOne("ProjectQuiz.Data.Quiz", "Quiz")
                         .WithMany("QuizResults")
                         .HasForeignKey("QuizId")
-                        .HasConstraintName("FK__QuizResul__QuizI__59063A47");
+                        .IsRequired()
+                        .HasConstraintName("FK__QuizResul__QuizI__282DF8C2");
 
                     b.HasOne("ProjectQuiz.Data.User", "User")
                         .WithMany("QuizResults")
                         .HasForeignKey("UserId")
-                        .HasConstraintName("FK__QuizResul__UserI__5812160E");
+                        .IsRequired()
+                        .HasConstraintName("FK__QuizResul__UserI__2739D489");
 
                     b.Navigation("Quiz");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ProjectQuiz.Data.UserQuiz", b =>
+                {
+                    b.HasOne("ProjectQuiz.Data.Project", "Project")
+                        .WithMany("UserQuizzes")
+                        .HasForeignKey("ProjectId")
+                        .IsRequired()
+                        .HasConstraintName("FK__UserQuiz__Projec__2BFE89A6");
+
+                    b.HasOne("ProjectQuiz.Data.User", "User")
+                        .WithMany("UserQuizzes")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK__UserQuiz__UserId__2B0A656D");
+
+                    b.Navigation("Project");
 
                     b.Navigation("User");
                 });
@@ -291,6 +355,8 @@ namespace ProjectQuiz.Migrations
                     b.Navigation("ProjectMembers");
 
                     b.Navigation("Quizzes");
+
+                    b.Navigation("UserQuizzes");
                 });
 
             modelBuilder.Entity("ProjectQuiz.Data.Quiz", b =>
@@ -307,6 +373,8 @@ namespace ProjectQuiz.Migrations
                     b.Navigation("Projects");
 
                     b.Navigation("QuizResults");
+
+                    b.Navigation("UserQuizzes");
                 });
 #pragma warning restore 612, 618
         }

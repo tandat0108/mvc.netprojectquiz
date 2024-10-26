@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "Delete Confirmation";
+}
+
+<h2>Member Deleted</h2>
+
+<div class="alert alert-success">
+    Member <strong>@ViewBag.Username</strong> has been successfully removed from the project.
+</div>
+
+<a asp-action="Index" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-primary">Back to Members List</a>

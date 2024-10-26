@@ -27,6 +27,11 @@ public partial class QuizzDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<UserQuiz> UserQuizzes { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=QuizzDB;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,50 +73,49 @@ public partial class QuizzDbContext : DbContext
 
         modelBuilder.Entity<ProjectMember>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ProjectM__3214EC07BE80DD9D");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();  // Thay đổi ở đây
-
             entity.Property(e => e.Role).HasMaxLength(50);
 
             entity.HasOne(d => d.Project).WithMany(p => p.ProjectMembers)
                 .HasForeignKey(d => d.ProjectId)
-                .HasConstraintName("FK__ProjectMe__Proje__4BAC3F29");
+                .HasConstraintName("FK_ProjectMembers_Projects");
 
             entity.HasOne(d => d.User).WithMany(p => p.ProjectMembers)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__ProjectMe__UserI__4CA06362");
+                .HasConstraintName("FK_ProjectMembers_Users");
         });
-
 
         modelBuilder.Entity<Quiz>(entity =>
         {
             entity.HasKey(e => e.QuizId).HasName("PK__Quizzes__3214EC07AF39F804");
 
+            entity.Property(e => e.CorrectAnswer).HasColumnType("text");
             entity.Property(e => e.QuestionText).HasMaxLength(255);
             entity.Property(e => e.QuestionType).HasMaxLength(50);
             entity.Property(e => e.Title).HasMaxLength(100);
 
             entity.HasOne(d => d.Project).WithMany(p => p.Quizzes)
                 .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Quizzes__Project__3C69FB99");
         });
 
         modelBuilder.Entity<QuizResult>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__QuizResu__3214EC07FB98EAE4");
+            entity.HasKey(e => e.Id).HasName("PK__QuizResu__3214EC077AC4B913");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Comment).HasColumnType("text");
             entity.Property(e => e.Score).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.SelectedAnswer).HasMaxLength(255);
 
             entity.HasOne(d => d.Quiz).WithMany(p => p.QuizResults)
                 .HasForeignKey(d => d.QuizId)
-                .HasConstraintName("FK__QuizResul__QuizI__59063A47");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__QuizResul__QuizI__282DF8C2");
 
             entity.HasOne(d => d.User).WithMany(p => p.QuizResults)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__QuizResul__UserI__5812160E");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__QuizResul__UserI__2739D489");
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -121,6 +125,25 @@ public partial class QuizzDbContext : DbContext
             entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.Role).HasMaxLength(50);
             entity.Property(e => e.Username).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<UserQuiz>(entity =>
+        {
+            entity.HasKey(e => e.UserQuizId).HasName("PK__UserQuiz__20FA63870534A927");
+
+            entity.ToTable("UserQuiz");
+
+            entity.Property(e => e.TotalScore).HasColumnType("decimal(5, 2)");
+
+            entity.HasOne(d => d.Project).WithMany(p => p.UserQuizzes)
+                .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__UserQuiz__Projec__2BFE89A6");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserQuizzes)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__UserQuiz__UserId__2B0A656D");
         });
 
         OnModelCreatingPartial(modelBuilder);

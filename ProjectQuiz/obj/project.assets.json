@@ -1786,6 +1786,129 @@
           }
         }
       },
+      "Microsoft.Testing.Extensions.HotReload/1.4.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Testing.Platform": "1.4.1"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Testing.Extensions.HotReload.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Testing.Extensions.HotReload.dll": {
+            "related": ".xml"
+          }
+        },
+        "resource": {
+          "lib/net8.0/cs/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net8.0/de/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net8.0/es/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net8.0/fr/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net8.0/it/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net8.0/ja/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net8.0/ko/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net8.0/pl/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net8.0/pt-BR/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net8.0/ru/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net8.0/tr/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net8.0/zh-Hans/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net8.0/zh-Hant/Microsoft.Testing.Extensions.HotReload.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/Microsoft.Testing.Extensions.HotReload.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Microsoft.Testing.Extensions.HotReload.props": {}
+        }
+      },
+      "Microsoft.Testing.Platform/1.4.1": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Microsoft.Testing.Platform.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Testing.Platform.dll": {
+            "related": ".xml"
+          }
+        },
+        "resource": {
+          "lib/net8.0/cs/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net8.0/de/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net8.0/es/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net8.0/fr/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net8.0/it/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net8.0/ja/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net8.0/ko/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net8.0/pl/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net8.0/pt-BR/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net8.0/ru/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net8.0/tr/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net8.0/zh-Hans/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net8.0/zh-Hant/Microsoft.Testing.Platform.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/Microsoft.Testing.Platform.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Microsoft.Testing.Platform.props": {}
+        }
+      },
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.21.0": {
         "type": "package",
         "build": {
@@ -5715,6 +5838,171 @@
         "microsoft.sqlserver.server.nuspec"
       ]
     },
+    "Microsoft.Testing.Extensions.HotReload/1.4.1": {
+      "sha512": "jUEMOYgHTow6QmunfrUZWRKJchKxzcbUi0adW+Us+9pooO4W2P+5lJQP2f40g3pT2PeuB5E6fsk4Qf/68E8ryQ==",
+      "type": "package",
+      "path": "microsoft.testing.extensions.hotreload/1.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "License.txt",
+        "PACKAGE.md",
+        "build/net6.0/Microsoft.Testing.Extensions.HotReload.props",
+        "build/net7.0/Microsoft.Testing.Extensions.HotReload.props",
+        "build/net8.0/Microsoft.Testing.Extensions.HotReload.props",
+        "build/netstandard2.0/Microsoft.Testing.Extensions.HotReload.props",
+        "buildMultiTargeting/Microsoft.Testing.Extensions.HotReload.props",
+        "buildTransitive/net6.0/Microsoft.Testing.Extensions.HotReload.props",
+        "buildTransitive/net7.0/Microsoft.Testing.Extensions.HotReload.props",
+        "buildTransitive/net8.0/Microsoft.Testing.Extensions.HotReload.props",
+        "buildTransitive/netstandard2.0/Microsoft.Testing.Extensions.HotReload.props",
+        "lib/net6.0/Microsoft.Testing.Extensions.HotReload.dll",
+        "lib/net6.0/Microsoft.Testing.Extensions.HotReload.xml",
+        "lib/net6.0/cs/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/de/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/es/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/fr/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/it/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/ja/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/ko/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/pl/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/pt-BR/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/ru/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/tr/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/zh-Hans/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net6.0/zh-Hant/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/Microsoft.Testing.Extensions.HotReload.dll",
+        "lib/net7.0/Microsoft.Testing.Extensions.HotReload.xml",
+        "lib/net7.0/cs/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/de/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/es/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/fr/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/it/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/ja/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/ko/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/pl/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/pt-BR/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/ru/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/tr/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/zh-Hans/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net7.0/zh-Hant/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/Microsoft.Testing.Extensions.HotReload.dll",
+        "lib/net8.0/Microsoft.Testing.Extensions.HotReload.xml",
+        "lib/net8.0/cs/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/de/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/es/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/fr/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/it/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/ja/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/ko/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/pl/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/pt-BR/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/ru/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/tr/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/zh-Hans/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/net8.0/zh-Hant/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/Microsoft.Testing.Extensions.HotReload.dll",
+        "lib/netstandard2.0/Microsoft.Testing.Extensions.HotReload.xml",
+        "lib/netstandard2.0/cs/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/de/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/es/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/fr/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/it/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/ja/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/ko/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/pl/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/pt-BR/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/ru/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/tr/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/zh-Hans/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "lib/netstandard2.0/zh-Hant/Microsoft.Testing.Extensions.HotReload.resources.dll",
+        "microsoft.testing.extensions.hotreload.1.4.1.nupkg.sha512",
+        "microsoft.testing.extensions.hotreload.nuspec"
+      ]
+    },
+    "Microsoft.Testing.Platform/1.4.1": {
+      "sha512": "LT+DsDCtQL0x8tuClGk5mkBfeSdBuCgMX7UCE44H0JoayvOHhnbKCT5DElo2XNPclCbgm1PsPvePNPYQxV+X9w==",
+      "type": "package",
+      "path": "microsoft.testing.platform/1.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "PACKAGE.md",
+        "build/net6.0/Microsoft.Testing.Platform.props",
+        "build/net7.0/Microsoft.Testing.Platform.props",
+        "build/net8.0/Microsoft.Testing.Platform.props",
+        "build/netstandard2.0/Microsoft.Testing.Platform.props",
+        "buildMultiTargeting/Microsoft.Testing.Platform.props",
+        "buildTransitive/net6.0/Microsoft.Testing.Platform.props",
+        "buildTransitive/net7.0/Microsoft.Testing.Platform.props",
+        "buildTransitive/net8.0/Microsoft.Testing.Platform.props",
+        "buildTransitive/netstandard2.0/Microsoft.Testing.Platform.props",
+        "lib/net6.0/Microsoft.Testing.Platform.dll",
+        "lib/net6.0/Microsoft.Testing.Platform.xml",
+        "lib/net6.0/cs/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/de/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/es/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/fr/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/it/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/ja/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/ko/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/pl/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/pt-BR/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/ru/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/tr/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/zh-Hans/Microsoft.Testing.Platform.resources.dll",
+        "lib/net6.0/zh-Hant/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/Microsoft.Testing.Platform.dll",
+        "lib/net7.0/Microsoft.Testing.Platform.xml",
+        "lib/net7.0/cs/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/de/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/es/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/fr/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/it/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/ja/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/ko/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/pl/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/pt-BR/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/ru/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/tr/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/zh-Hans/Microsoft.Testing.Platform.resources.dll",
+        "lib/net7.0/zh-Hant/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/Microsoft.Testing.Platform.dll",
+        "lib/net8.0/Microsoft.Testing.Platform.xml",
+        "lib/net8.0/cs/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/de/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/es/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/fr/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/it/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/ja/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/ko/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/pl/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/pt-BR/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/ru/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/tr/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/zh-Hans/Microsoft.Testing.Platform.resources.dll",
+        "lib/net8.0/zh-Hant/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/Microsoft.Testing.Platform.dll",
+        "lib/netstandard2.0/Microsoft.Testing.Platform.xml",
+        "lib/netstandard2.0/cs/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/de/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/es/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/fr/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/it/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/ja/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/ko/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/pl/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/pt-BR/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/ru/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/tr/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/zh-Hans/Microsoft.Testing.Platform.resources.dll",
+        "lib/netstandard2.0/zh-Hant/Microsoft.Testing.Platform.resources.dll",
+        "microsoft.testing.platform.1.4.1.nupkg.sha512",
+        "microsoft.testing.platform.nuspec"
+      ]
+    },
     "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.21.0": {
       "sha512": "8NudeHOE56YsY59HYY89akRMup8Ho+7Y3cADTGjajjWroXVU9RQai2nA6PfteB8AuzmRHZ5NZQB2BnWhQEul5g==",
       "type": "package",
@@ -7909,6 +8197,7 @@
       "Microsoft.EntityFrameworkCore >= 8.0.10",
       "Microsoft.EntityFrameworkCore.SqlServer >= 8.0.10",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.10",
+      "Microsoft.Testing.Extensions.HotReload >= 1.4.1",
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.21.0",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 8.0.6"
     ]
@@ -7975,6 +8264,10 @@
             "suppressParent": "All",
             "target": "Package",
             "version": "[8.0.10, )"
+          },
+          "Microsoft.Testing.Extensions.HotReload": {
+            "target": "Package",
+            "version": "[1.4.1, )"
           },
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
             "target": "Package",

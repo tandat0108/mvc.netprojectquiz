@@ -12,8 +12,8 @@ using ProjectQuiz.Data;
 namespace ProjectQuiz.Migrations
 {
     [DbContext(typeof(QuizzDbContext))]
-    [Migration("20241020150909_UpdateProjectMemberIdAutoIncrement")]
-    partial class UpdateProjectMemberIdAutoIncrement
+    [Migration("20241021220317_RevertUpdateQuizResultIdentity")]
+    partial class RevertUpdateQuizResultIdentity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

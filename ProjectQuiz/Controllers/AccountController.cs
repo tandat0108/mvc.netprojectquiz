@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using ProjectQuiz.ViewModels;
-using ProjectQuiz.Data; // Import namespace của User entity
+using ProjectQuiz.Data; // Import namespace for the User entity
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -27,60 +27,110 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            // Tìm người dùng dựa trên Username
+            // Find user based on Username
             var user = _context.Users.FirstOrDefault(u => u.Username == model.Username);
 
             if (user != null)
             {
-                // So sánh password sau khi hash với PasswordHash từ DB
+                // Compare hashed password with PasswordHash from DB
                 if (VerifyPassword(model.Password, user.PasswordHash))
                 {
-                    // Tạo claims cho người dùng
+                    // Create claims for the user
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // Lưu UserId vào claims
-                        new Claim(ClaimTypes.Name, user.Username) // Lưu tên người dùng
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // Store UserId in claims
+                        new Claim(ClaimTypes.Name, user.Username), // Store Username
+                        new Claim(ClaimTypes.Role, user.Role) // Store user's role (admin/member)
                     };
 
-                    // Tạo identity từ danh sách claims
+                    // Create identity from claims list
                     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                    // Tạo principal
+                    // Create principal
                     var principal = new ClaimsPrincipal(identity);
 
-                    // Lưu thông tin người dùng vào cookie (đăng nhập)
+                    // Store user information in cookie (login)
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                    // Chuyển hướng người dùng tới trang Project sau khi đăng nhập thành công
+                    // Redirect user to the Project page after successful login
                     return RedirectToAction("Index", "Projects");
                 }
                 else
                 {
-                    // Thêm thông báo lỗi khi mật khẩu không chính xác
+                    // Add error message when password is incorrect
                     ModelState.AddModelError("", "Password is incorrect.");
                 }
             }
             else
             {
-                // Thêm thông báo lỗi khi không tìm thấy username
+                // Add error message when username is not found
                 ModelState.AddModelError("", "Username does not exist.");
             }
         }
         return View(model);
     }
 
+    [HttpGet]
+    public IActionResult ChangePassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            // Get the current user ID from claims
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Retrieve the user from the database
+            var user = await _context.Users.FindAsync(int.Parse(userId));
+            if (user != null)
+            {
+                // Verify current password
+                if (VerifyPassword(model.CurrentPassword, user.PasswordHash))
+                {
+                    // Hash new password and save it
+                    user.PasswordHash = HashPassword(model.NewPassword);
+                    await _context.SaveChangesAsync();
+
+                    // Display success message
+                    ViewBag.Message = "Password changed successfully.";
+                    return View("ChangePasswordSuccess");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "The current password is incorrect.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "User not found.");
+            }
+        }
+        return View(model);
+    }
+
+    // HashPassword is a sample function; replace it with an actual hash function
+    private string HashPassword(string password)
+    {
+        // Integrate the actual hash function here
+        return password; // Replace with actual hash logic
+    }
+
     [HttpPost]
     public async Task<IActionResult> Logout()
     {
-        // Đăng xuất người dùng
+        // Log out the user
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Login", "Account");
     }
 
     private bool VerifyPassword(string password, string passwordHash)
     {
-        // Thực hiện hash password và so sánh với passwordHash từ DB
-        // Đây chỉ là mô tả, bạn cần tích hợp với hàm hash thực tế.
-        return password == passwordHash; // Thay bằng logic hash thực tế
+        // Hash password and compare it with PasswordHash from DB
+        // This is just a sample, integrate the actual hash function here.
+        return password == passwordHash; // Replace with actual hash logic
     }
 }

@@ -15,9 +15,11 @@ public partial class Quiz
 
     public string QuestionText { get; set; } = null!;
 
-    public int IsCorrect { get; set; }
+    public string? IsCorrect { get; set; }
 
-    public string Answers { get; set; } = null!;
+    public string? Answers { get; set; }
+
+    public string? CorrectAnswer { get; set; }
 
     public virtual Project? Project { get; set; }
 

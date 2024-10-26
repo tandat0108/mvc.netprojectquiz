@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using ProjectQuiz.Data;
-using Newtonsoft.Json; // Đảm bảo rằng bạn đã thêm namespace này
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,23 +8,30 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
     {
-        // Cấu hình để bỏ qua vòng lặp tự tham chiếu
-        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
     });
 
-// Thêm DbContext cho ứng dụng, kết nối với cơ sở dữ liệu
+// Add DbContext for SQL Server with Scoped lifetime and enable sensitive data logging
 builder.Services.AddDbContext<QuizzDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("QuizzDB"));
+
+    // Chỉ bật EnableSensitiveDataLogging trong môi trường phát triển
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+    }
 });
 
-// Cấu hình Authentication sử dụng Cookie
+// Configure Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login";  // Đường dẫn tới trang đăng nhập
-        options.LogoutPath = "/Account/Logout"; // Đường dẫn để đăng xuất
-        options.AccessDeniedPath = "/Account/AccessDenied"; // Trang bị từ chối truy cập (nếu cần)
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";  // Đường dẫn trang từ chối truy cập
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);   // Hạn cookie
+        options.SlidingExpiration = true;                    // Gia hạn cookie nếu người dùng hoạt động
     });
 
 var app = builder.Build();
@@ -42,23 +48,21 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Thêm Authentication Middleware
-app.UseAuthentication(); // Middleware này phải đứng trước Authorization
+// Use Authentication and Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
-// Định tuyến mặc định cho các controller
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
 
-    // Thêm route cụ thể cho MembersController nếu cần
+    // Thêm route cụ thể cho ProjectMembersController
     endpoints.MapControllerRoute(
-        name: "members",
-        pattern: "Member/{action=Index}/{projectId?}",
-        defaults: new { controller = "Members", action = "Index" });
+        name: "projectmembers",
+        pattern: "ProjectMembers/{action=Index}/{projectId?}",
+        defaults: new { controller = "ProjectMembers", action = "Index" });
 });
-
 
 app.Run();

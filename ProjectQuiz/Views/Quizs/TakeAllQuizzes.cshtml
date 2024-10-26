@@ -1,0 +1,48 @@
+﻿<h2>Take All Quizzes</h2>
+
+@if (TempData["RetakeConfirmation"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["RetakeConfirmation"]
+    </div>
+}
+else
+{
+    <form asp-action="SubmitAllQuizzes" method="post" asp-route-id="@ViewBag.ProjectId">
+        @foreach (var quiz in Model)
+        {
+            <div>
+                <h4>@quiz.QuestionText</h4>
+                @if (quiz.QuestionType == "multiple-choice")
+                {
+                    <ul>
+                        @{
+                            var answers = !string.IsNullOrEmpty(quiz.Answers) ? quiz.Answers.Split(',') : new string[0];
+
+                            for (int i = 0; i < answers.Length; i++)
+                            {
+                                var answer = answers[i].Trim();
+                                if (!string.IsNullOrWhiteSpace(answer))
+                                {
+                                    <li>
+                                        <input type="radio" name="selectedAnswers[@quiz.QuizId]" value="@i" />
+                                        <label>@answer</label>
+                                    </li>
+                                }
+                            }
+                        }
+                    </ul>
+                }
+                else if (quiz.QuestionType == "short-answer")
+                {
+                    <div class="form-group">
+                        <label for="shortAnswer-@quiz.QuizId">Your Answer:</label>
+                        <input type="text" class="form-control" id="shortAnswer-@quiz.QuizId" name="selectedAnswers[@quiz.QuizId]" placeholder="Enter your answer" />
+                    </div>
+                }
+            </div>
+        }
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+}

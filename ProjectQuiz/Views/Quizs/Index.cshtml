@@ -1,47 +1,62 @@
-﻿@model IEnumerable<ProjectQuiz.Data.Quiz>
+﻿@using System.Security.Claims
+@model IEnumerable<ProjectQuiz.Data.Quiz>
 
 @{
     ViewData["Title"] = "Quizzes Index";
+    var isProjectOwner = ViewBag.ProjectOwnerId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Kiểm tra nếu người dùng là chủ dự án
 }
 
 <div class="dashboard-container">
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3 sidebar">
-            <h2>Quizzes</h2>
+            <h2>@ViewBag.ProjectName</h2>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" href="/Projects/Details/@ViewBag.ProjectId">Project Details</a>
+                    <a class="nav-link" asp-action="Details" asp-controller="Projects" asp-route-id="@ViewBag.ProjectId">Details</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="ProjectMembers" asp-action="Index" asp-route-projectId="@ViewBag.ProjectId">Members</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="Members" asp-route-id="@ViewBag.ProjectId">Members</a>
+                    <a class="nav-link active" asp-action="Index" asp-controller="Quizs" asp-route-id="@ViewBag.ProjectId">Quizzes</a>
                 </li>
                 <li class="nav-item">
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="Index" asp-controller="Quizs" asp-route-id="@ViewBag.ProjectId">Quizzes</a>
-              
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="Results" asp-route-id="@ViewBag.ProjectId">Results</a>
+                    <a class="nav-link" asp-action="QuizResults" asp-controller="Quizs" asp-route-id="@ViewBag.ProjectId">Results</a>
                 </li>
             </ul>
         </div>
 
         <!-- Main Content -->
         <div class="col-md-9 content">
-            <h3>Quiz List</h3>
-            <p>
-                <a asp-action="Create" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-success">Create New Quiz</a>
-            </p>
-            <p>Current Project ID: @ViewBag.ProjectId</p>
+            <div class="header">
+                <h3>Quiz List</h3>
 
+            </div>
+
+            <!-- "Take All Quizzes" button only visible if the user is not the project owner -->
+            @if (!isProjectOwner)
+            {
+                <a asp-action="TakeAllQuizzes" asp-route-id="@ViewBag.ProjectId" class="btn btn-primary">Take All Quizzes</a>
+            }
+
+            <!-- "Create Question" button only visible if the user is the project owner -->
+            @if (isProjectOwner)
+            {
+                <a asp-action="Create" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-success">Create Question</a>
+            }
             <table class="table">
                 <thead>
                     <tr>
                         <th>Question</th>
                         <th>Answers</th>
-                        <th>Correct Answer</th>
-                        <th></th>
+                        <th>Question Type</th>
+                        <th>Correct Answer (Project Owner Only)</th>
+                        @if (isProjectOwner)
+                        {
+                            <th>Actions</th> <!-- Thêm cột hành động để hiển thị nút xóa -->
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -52,50 +67,64 @@
                                 <strong>@item.QuestionText</strong>
                             </td>
                             <td>
-                                <!-- Split answers and display them with labels A, B, C, D, ... -->
                                 <ul>
                                     @{
-                                        var answers = item.Answers.Split(',');
+                                        var answers = !string.IsNullOrEmpty(item.Answers) ? item.Answers.Split(',') : new string[0];
                                         var letters = new[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
+
                                         for (int i = 0; i < answers.Length; i++)
                                         {
                                             var answer = answers[i].Trim();
                                             if (!string.IsNullOrWhiteSpace(answer))
                                             {
-                                                <li><strong>@letters[i])</strong> @answer</li>
+                                                <li><strong>@letters[i]</strong> - @answer</li>
                                             }
                                         }
                                     }
                                 </ul>
                             </td>
+                            <td>@item.QuestionType</td>
                             <td>
-                                <!-- Display the correct answer based on its position -->
-                                @if (item.IsCorrect > 0 && item.IsCorrect <= letters.Length)
+                                @if (isProjectOwner)
                                 {
-                                    var correctAnswerLetter = letters[item.IsCorrect - 1];
-                                    <strong>Correct Answer: </strong>
-                                    @correctAnswerLetter
-                                }
-                                else
-                                {
-                                    <strong>Correct Answer: </strong>
-                                    <!-- Handle cases with invalid IsCorrect value -->
+                                    if (item.QuestionType == "multiple-choice")
+                                    {
+                                        string correctAnswerLetter = item.IsCorrect switch
+                                        {
+                                            "1" => "A",
+                                            "2" => "B",
+                                            "3" => "C",
+                                            "4" => "D",
+                                            _ => "N/A"
+                                        };
+                                        @correctAnswerLetter
+                                    }
+                                    else if (item.QuestionType == "short-answer")
+                                    {
+                                        @item.CorrectAnswer
+                                    }
                                 }
                             </td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@item.QuizId" asp-route-projectId="@ViewBag.ProjectId">Edit</a> |
-                                <a asp-action="Details" asp-route-id="@item.QuizId" asp-route-projectId="@ViewBag.ProjectId">Details</a> |
-                                <a asp-action="Delete" asp-route-id="@item.QuizId" asp-route-projectId="@ViewBag.ProjectId">Delete</a>
-                            </td>
+                            @if (isProjectOwner)
+                            {
+                                <td>
+                                    <!-- Form xóa quiz -->
+                                    <form asp-action="DeleteQuiz" asp-route-id="@item.QuizId" asp-route-projectId="@ViewBag.ProjectId" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </td>
+                            }
                         </tr>
                     }
                 </tbody>
             </table>
+
+
         </div>
+
     </div>
 </div>
 
-<!-- Styles for Dashboard Layout -->
 <style>
     .dashboard-container {
         padding: 20px;
@@ -112,12 +141,38 @@
         margin-bottom: 10px;
     }
 
+        .nav-link.active {
+            font-weight: bold;
+            color: #007bff;
+        }
+
     .content {
         padding-left: 30px;
     }
 
-    .table {
-        margin-top: 20px;
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    table {
+        width: 100%; /* Chiếm toàn bộ chiều rộng */
+        border-collapse: collapse; /* Xóa viền giữa các ô */
+    }
+
+    th, td {
+        text-align: center; /* Căn giữa nội dung */
+        padding: 10px; /* Thêm khoảng cách cho các ô */
+        border: 1px solid #dee2e6; /* Viền cho bảng */
+    }
+
+    th {
+        background-color: #f8f9fa; /* Màu nền cho tiêu đề bảng */
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2; /* Màu nền cho các hàng chẵn */
     }
 </style>
-

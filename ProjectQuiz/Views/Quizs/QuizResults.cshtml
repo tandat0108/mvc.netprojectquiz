@@ -1,0 +1,157 @@
+﻿@model IEnumerable<ProjectQuiz.Data.Quiz>
+
+@{
+    var isAdmin = ViewBag.IsAdmin ?? false;
+    var noResultsMessage = ViewBag.NoResults as string;
+}
+
+<h2>Quiz Results</h2>
+
+
+@if (noResultsMessage != null)
+{
+    <p>@noResultsMessage</p>
+}
+else
+{
+    @if (isAdmin)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Total Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var userScore in ViewBag.UserScores)
+                {
+                    <tr>
+                        <td>@userScore.User.Username</td>
+                        <td>@userScore.TotalScore</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h4>Your Total Score: @ViewBag.TotalScore</h4>
+
+        <h4>Your Answers</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Question</th>
+                    <th>Answers</th>
+                    <th>Your Answer</th>
+                    <th>Correct Answer</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var result in ViewBag.UserResults)
+                {
+                    <tr>
+                        <td>
+                            <strong>@result.QuizResult.Quiz.QuestionText</strong>
+                        </td>
+                        <td>
+                            <ul>
+                                @{
+                                    var answers = !string.IsNullOrEmpty(result.QuizResult.Quiz.Answers)
+                                    ? result.QuizResult.Quiz.Answers.Split(',')
+                                    : new string[0];
+                                    var letters = new[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
+
+                                    for (int i = 0; i < answers.Length; i++)
+                                    {
+                                        var answer = answers[i].Trim();
+                                        if (!string.IsNullOrWhiteSpace(answer))
+                                        {
+                                            <li><strong>@letters[i]</strong> - @answer</li>
+                                        }
+                                    }
+                                }
+                            </ul>
+                        </td>
+                        <td>
+                            @if (result.QuizResult.Quiz.QuestionType == "multiple-choice")
+                            {
+                                // Chuyển đổi SelectedAnswer thành ký tự từ `A`, `B`, `C`, `D`
+                                if (!string.IsNullOrEmpty(result.SelectedAnswer))
+                                {
+                                    var selectedAnswerIndex = int.Parse(result.SelectedAnswer) - 1; // Giảm 1 để tương ứng với vị trí trong mảng
+                                    var selectedAnswerLetter = (selectedAnswerIndex >= 0 && selectedAnswerIndex < letters.Length)
+                                    ? letters[selectedAnswerIndex].ToString()
+                                    : "N/A";
+
+                                    @selectedAnswerLetter
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            }
+                            else if (result.QuizResult.Quiz.QuestionType == "short-answer")
+                            {
+                                @result.SelectedAnswer
+                            }
+                        </td>
+
+                        <td>
+                            @if (result.QuizResult.Quiz.QuestionType == "multiple-choice")
+                            {
+                                if (!string.IsNullOrEmpty(result.QuizResult.Quiz.IsCorrect))
+                                {
+                                    var correctAnswerIndex = int.Parse(result.QuizResult.Quiz.IsCorrect) - 1; // Giảm 1 để tương ứng với vị trí trong mảng
+                                    var correctAnswerLetter = (correctAnswerIndex >= 0 && correctAnswerIndex < letters.Length)
+                                    ? letters[correctAnswerIndex].ToString()
+                                    : "N/A";
+
+                                    @correctAnswerLetter
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            }
+                            else if (result.QuizResult.Quiz.QuestionType == "short-answer")
+                            {
+                                @result.QuizResult.Quiz.CorrectAnswer
+                            }
+                        </td>
+                        <td>
+                            @if (result.QuizResult.Quiz.QuestionType == "multiple-choice")
+                            {
+                                // Đối với câu hỏi trắc nghiệm, so sánh `SelectedAnswer` với `IsCorrect`
+                                if (result.SelectedAnswer == result.QuizResult.Quiz.IsCorrect)
+                                {
+                                    @:true
+                                }
+                                else
+                                {
+                                    @:false
+                                }
+                            }
+                            else if (result.QuizResult.Quiz.QuestionType == "short-answer")
+                            {
+                                // Đối với câu hỏi ngắn, so sánh `SelectedAnswer` với `CorrectAnswer`
+                                if (result.SelectedAnswer?.Trim().Equals(result.QuizResult.Quiz.CorrectAnswer?.Trim(), StringComparison.OrdinalIgnoreCase) == true)
+                                {
+                                    @:true
+                                }
+                                else
+                                {
+                                    @:false
+                                }
+                            }
+                        </td>
+
+                    </tr>
+                }
+               
+            </tbody>
+        </table>
+    }
+}

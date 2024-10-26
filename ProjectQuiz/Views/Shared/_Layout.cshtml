@@ -38,7 +38,7 @@
                 <div>
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <a href="#" class="text-dark me-3">Change Password</a>
+                        <a asp-controller="Account" asp-action="ChangePassword" class="text-dark me-3">Change Password</a>
                         <form asp-action="Logout" asp-controller="Account" method="post" class="d-inline">
                             <button type="submit" class="btn btn-link text-dark">Logout</button>
                         </form>
@@ -47,6 +47,7 @@
                     {
                         <a asp-controller="Account" asp-action="Login" class="text-dark">Login</a>
                     }
+
                 </div>
             </div>
         </nav>
