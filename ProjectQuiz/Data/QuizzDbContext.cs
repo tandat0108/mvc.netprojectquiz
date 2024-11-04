@@ -42,13 +42,14 @@ public partial class QuizzDbContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.IntroductionVideoUrl).HasMaxLength(500);
             entity.Property(e => e.LastUpdatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.LocalVideoPath).HasMaxLength(500);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.YouTubeVideoUrl).HasMaxLength(500);
 
             entity.HasOne(d => d.User).WithMany(p => p.Projects)
                 .HasForeignKey(d => d.UserId)

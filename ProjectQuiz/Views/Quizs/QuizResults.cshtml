@@ -78,10 +78,10 @@ else
                         <td>
                             @if (result.QuizResult.Quiz.QuestionType == "multiple-choice")
                             {
-                                // Chuyển đổi SelectedAnswer thành ký tự từ `A`, `B`, `C`, `D`
+                             
                                 if (!string.IsNullOrEmpty(result.SelectedAnswer))
                                 {
-                                    var selectedAnswerIndex = int.Parse(result.SelectedAnswer) - 1; // Giảm 1 để tương ứng với vị trí trong mảng
+                                    var selectedAnswerIndex = int.Parse(result.SelectedAnswer) - 1; 
                                     var selectedAnswerLetter = (selectedAnswerIndex >= 0 && selectedAnswerIndex < letters.Length)
                                     ? letters[selectedAnswerIndex].ToString()
                                     : "N/A";
@@ -104,7 +104,7 @@ else
                             {
                                 if (!string.IsNullOrEmpty(result.QuizResult.Quiz.IsCorrect))
                                 {
-                                    var correctAnswerIndex = int.Parse(result.QuizResult.Quiz.IsCorrect) - 1; // Giảm 1 để tương ứng với vị trí trong mảng
+                                    var correctAnswerIndex = int.Parse(result.QuizResult.Quiz.IsCorrect) - 1; 
                                     var correctAnswerLetter = (correctAnswerIndex >= 0 && correctAnswerIndex < letters.Length)
                                     ? letters[correctAnswerIndex].ToString()
                                     : "N/A";
@@ -124,7 +124,7 @@ else
                         <td>
                             @if (result.QuizResult.Quiz.QuestionType == "multiple-choice")
                             {
-                                // Đối với câu hỏi trắc nghiệm, so sánh `SelectedAnswer` với `IsCorrect`
+                              
                                 if (result.SelectedAnswer == result.QuizResult.Quiz.IsCorrect)
                                 {
                                     @:true
@@ -136,7 +136,7 @@ else
                             }
                             else if (result.QuizResult.Quiz.QuestionType == "short-answer")
                             {
-                                // Đối với câu hỏi ngắn, so sánh `SelectedAnswer` với `CorrectAnswer`
+                               
                                 if (result.SelectedAnswer?.Trim().Equals(result.QuizResult.Quiz.CorrectAnswer?.Trim(), StringComparison.OrdinalIgnoreCase) == true)
                                 {
                                     @:true

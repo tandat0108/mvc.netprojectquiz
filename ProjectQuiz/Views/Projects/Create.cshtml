@@ -1,41 +1,60 @@
 ﻿@model ProjectQuiz.Data.Project
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Project";
 }
 
-<h1>Create</h1>
+<h1>Create Project</h1>
 
-<h4>Project</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+    <div class="col-md-6">
+        <form asp-action="Create" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+
+            <input asp-for="UserId" type="hidden" />
+
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                <label class="control-label">Chọn phương thức thêm video:</label>
+                <div>
+                    <input type="radio" id="youtubeOption" name="videoOption" value="youtube" checked>
+                    <label for="youtubeOption">YouTube</label>
+                    <input type="radio" id="localOption" name="videoOption" value="local">
+                    <label for="localOption">Tải lên từ bộ nhớ cục bộ</label>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="IntroductionVideoUrl" class="control-label"></label>
-                <input asp-for="IntroductionVideoUrl" class="form-control" />
-                <span asp-validation-for="IntroductionVideoUrl" class="text-danger"></span>
+
+            <div class="form-group" id="youtubeField">
+                <label asp-for="YouTubeVideoUrl" class="control-label">URL Video YouTube</label>
+                <input asp-for="YouTubeVideoUrl" class="form-control" />
+                <span asp-validation-for="YouTubeVideoUrl" class="text-danger"></span>
             </div>
+
+            <div class="form-group hidden" id="localField">
+                <label for="localVideoFile">Tải Video Cục Bộ</label>
+                <input type="file" id="localVideoFile" name="localVideoFile" class="form-control" />
+                <span class="text-danger" asp-validation-for="LocalVideoPath"></span>
+            </div>
+
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
                 <input asp-for="Status" class="form-control" />
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -43,12 +62,39 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @Html.Partial("_ValidationScriptsPartial")
+
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const youtubeOption = document.getElementById("youtubeOption");
+            const localOption = document.getElementById("localOption");
+            const youtubeField = document.getElementById("youtubeField");
+            const localField = document.getElementById("localField");
+            const youtubeInput = document.querySelector("[asp-for='YouTubeVideoUrl']");
+            const localFileInput = document.getElementById("localVideoFile");
+
+            youtubeOption.addEventListener("change", function () {
+                if (youtubeOption.checked) {
+                    youtubeField.classList.remove("hidden");
+                    localField.classList.add("hidden");
+                    localFileInput.value = null;
+                }
+            });
+
+            localOption.addEventListener("change", function () {
+                if (localOption.checked) {
+                    localField.classList.remove("hidden");
+                    youtubeField.classList.add("hidden");
+                    youtubeInput.value = "";
+                }
+            });
+        });
+    </script>
 }

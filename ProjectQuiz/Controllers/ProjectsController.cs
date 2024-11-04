@@ -78,29 +78,83 @@ namespace ProjectQuiz.Controllers
             return View(project); // Return details view
         }
 
+
+
         // GET: Projects/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Projects/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,IntroductionVideoUrl,CreatedDate,LastUpdatedDate,Status")] Project project)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,YouTubeVideoUrl,LocalVideoPath,Status")] Project project, IFormFile localVideoFile)
         {
-            if (ModelState.IsValid)
+            // Assign UserId from the logged-in user's information
+            project.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            project.CreatedDate = DateTime.Now;
+            project.LastUpdatedDate = DateTime.Now;
+
+            if (!string.IsNullOrWhiteSpace(project.YouTubeVideoUrl))
             {
-                // Assign UserId to the new project
-                project.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                project.CreatedDate = DateTime.Now; // Set project creation date
-                _context.Add(project);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // If a YouTube URL is provided, set LocalVideoPath to null
+                project.LocalVideoPath = null;
+            }
+            else if (localVideoFile != null && localVideoFile.Length > 0)
+            {
+                // If a local video file is uploaded, set YouTubeVideoUrl to null
+                project.YouTubeVideoUrl = null;
+
+                try
+                {
+                    // Ensure the "wwwroot/videos" directory exists
+                    var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "videos");
+                    if (!Directory.Exists(directoryPath))
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+
+                    // Check the file type (MIME type)
+                    if (!localVideoFile.ContentType.StartsWith("video"))
+                    {
+                        ModelState.AddModelError("", "Only video files are allowed.");
+                        return View(project);
+                    }
+
+                    // Generate a unique file name and create the full file path
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(localVideoFile.FileName);
+                    var filePath = Path.Combine(directoryPath, fileName);
+
+                    // Save the video file to the "wwwroot/videos" directory
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await localVideoFile.CopyToAsync(stream);
+                    }
+
+                    // Save the video path to the database
+                    project.LocalVideoPath = "/videos/" + fileName;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "An error occurred while saving the video file: " + ex.Message);
+                    return View(project);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "You must provide either a YouTube URL or upload a video file.");
+                return View(project);
             }
 
-            return View(project);
+            // Save the project to the database
+            _context.Add(project);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
+
+
+
+
 
         // GET: Projects/Edit/5
         public async Task<IActionResult> Edit(int? id)

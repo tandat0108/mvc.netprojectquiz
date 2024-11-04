@@ -3,7 +3,7 @@
 <h1>Edit Quiz</h1>
 <form asp-action="Edit" asp-route-id="@Model.QuizId" method="post">
 
-    @Html.AntiForgeryToken() <!-- Token chống tấn công CSRF -->
+    @Html.AntiForgeryToken() 
 
     <div class="form-group">
         <label asp-for="Title" class="control-label"></label>

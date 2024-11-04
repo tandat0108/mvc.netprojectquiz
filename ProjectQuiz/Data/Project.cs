@@ -13,13 +13,17 @@ public partial class Project
 
     public int? UserId { get; set; }
 
-    public string? IntroductionVideoUrl { get; set; }
-
     public DateTime? CreatedDate { get; set; }
 
     public DateTime? LastUpdatedDate { get; set; }
 
     public string? Status { get; set; }
+
+    public string? YouTubeVideoUrl { get; set; }
+
+    public string? LocalVideoPath { get; set; }
+
+    public string? IntroductionVideoUrl { get; set; }
 
     public virtual ICollection<ProjectComment> ProjectComments { get; set; } = new List<ProjectComment>();
 

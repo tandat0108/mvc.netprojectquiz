@@ -57,7 +57,7 @@ namespace ProjectQuiz.Controllers
                 return View(user);
             }
 
-            // Đảm bảo chỉ chấp nhận giá trị 'admin' hoặc 'member'
+            
             if (user.Role != "admin" && user.Role != "member")
             {
                 ModelState.AddModelError("Role", "Invalid role selected.");

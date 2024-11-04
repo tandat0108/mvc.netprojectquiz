@@ -1,4 +1,6 @@
-﻿@{
+﻿@model ProjectQuiz.Data.Project
+
+@{
     ViewData["Title"] = "Details";
 }
 
@@ -11,10 +13,8 @@
                     <a class="nav-link active" asp-action="Details" asp-route-id="@Model.Id">Details</a>
                 </li>
                 <li class="nav-item">
-                   
                     <a class="nav-link" asp-controller="ProjectMembers" asp-action="Index" asp-route-projectId="@Model.Id">Members</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" asp-action="Index" asp-controller="Quizs" asp-route-id="@Model.Id">Quizzes</a>
                 </li>
@@ -25,7 +25,6 @@
         </div>
 
         <div class="col-md-9 content">
-            
             @if (TempData["QuizCompleted"] != null)
             {
                 <div class="alert alert-success">
@@ -37,15 +36,23 @@
                 <h3>Introduction Video:</h3>
             </div>
 
-            @if (!string.IsNullOrEmpty(Model.IntroductionVideoUrl))
+            @if (!string.IsNullOrEmpty(Model.YouTubeVideoUrl))
             {
-                var embedUrl = Model.IntroductionVideoUrl.Replace("watch?v=", "embed/");
+                // Chuyển đổi URL YouTube sang định dạng nhúng
+                var embedUrl = Model.YouTubeVideoUrl.Replace("watch?v=", "embed/");
                 <iframe width="560" height="315"
                         src="@embedUrl"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen>
                 </iframe>
+            }
+            else if (!string.IsNullOrEmpty(Model.LocalVideoPath))
+            {
+                <video width="560" height="315" controls>
+                    <source src="@Model.LocalVideoPath" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
             }
             else
             {
