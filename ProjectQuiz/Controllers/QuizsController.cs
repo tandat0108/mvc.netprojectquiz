@@ -116,67 +116,89 @@ namespace ProjectQuiz.Controllers
             return View(quiz);
         }
 
+
         [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id, int projectId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var quiz = await _context.Quizzes.FindAsync(id);
-            if (quiz == null)
+
+            if (quiz == null || quiz.ProjectId != projectId)
             {
                 return NotFound();
             }
 
-            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Id", quiz.ProjectId);
+            ViewBag.QuestionTypeOptions = new SelectList(new[]
+            {
+        new { Value = "multiple-choice", Text = "Multiple Choice" },
+        new { Value = "short-answer", Text = "Short Answer" }
+    }, "Value", "Text", quiz.QuestionType);
+
+            ViewBag.CorrectAnswerOptions = new SelectList(new[]
+            {
+        new { Value = "1", Text = "Option 1" },
+        new { Value = "2", Text = "Option 2" },
+        new { Value = "3", Text = "Option 3" },
+        new { Value = "4", Text = "Option 4" }
+    }, "Value", "Text", quiz.IsCorrect);
+
+            ViewBag.ProjectId = projectId;
             return View(quiz);
         }
 
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("QuizId,Title,ProjectId,QuestionType,QuestionText,CorrectAnswer,Answers")] Quiz quiz, string[] Answers)
+        public async Task<IActionResult> Edit(int id, int projectId, [Bind("QuizId,Title,ProjectId,QuestionType,QuestionText")] Quiz quiz, string[] Answers, string correctAnswerMCQ, string CorrectAnswerSAQ)
         {
             if (id != quiz.QuizId)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (quiz.ProjectId == 0)
             {
-                try
-                {
-                    if (quiz.QuestionType == "multiple-choice")
-                    {
-                        quiz.Answers = string.Join(",", Answers);
-                    }
-                    else if (quiz.QuestionType == "short-answer")
-                    {
-                        quiz.Answers = null;
-                        quiz.CorrectAnswer = quiz.CorrectAnswer;
-                    }
-
-                    _context.Update(quiz);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!QuizExists(quiz.QuizId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                quiz.ProjectId = projectId;
             }
 
-            ViewBag.ProjectId = quiz.ProjectId;
-            return View(quiz);
+            if (quiz.QuestionType == "multiple-choice")
+            {
+                quiz.Answers = string.Join(",", Answers);
+                quiz.IsCorrect = correctAnswerMCQ;
+                quiz.CorrectAnswer = null;
+            }
+            else if (quiz.QuestionType == "short-answer")
+            {
+                if (string.IsNullOrWhiteSpace(CorrectAnswerSAQ))
+                {
+                    ModelState.AddModelError("CorrectAnswerSAQ", "Correct answer cannot be empty.");
+                    return View(quiz);
+                }
+                quiz.CorrectAnswer = CorrectAnswerSAQ;
+                quiz.IsCorrect = null;
+            }
+
+            try
+            {
+                _context.Update(quiz);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Quizzes.Any(e => e.QuizId == quiz.QuizId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(Index), new { id = quiz.ProjectId });
         }
+
+
 
         public async Task<IActionResult> Delete(int? id)
         {

@@ -113,7 +113,11 @@
                                         <button type="submit" class="btn btn-danger">Delete</button>
                                     </form>
                                 </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.QuizId" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-primary">Edit</a>
+                                </td>
                             }
+
                         </tr>
                     }
                 </tbody>

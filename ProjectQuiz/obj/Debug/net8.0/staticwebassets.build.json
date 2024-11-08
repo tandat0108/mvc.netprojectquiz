@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "HqcjzZu693/aLQfqulZXax/Y1lu7Ml63PZXWEnQBlyI=",
+  "Hash": "o2Eul0qiKqr7CCHzUDPHpiL/V83pK76rCfcznSkBMIo=",
   "Source": "ProjectQuiz",
   "BasePath": "_content/ProjectQuiz",
   "Mode": "Default",
@@ -1193,6 +1193,44 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Identity": "C:\\Users\\ntdat\\source\\repos\\ProjectQuiz\\ProjectQuiz\\wwwroot\\videos\\d368b86f-fe35-4494-bf03-63e771582ec3.mp4",
+      "SourceId": "ProjectQuiz",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\ntdat\\source\\repos\\ProjectQuiz\\ProjectQuiz\\wwwroot\\",
+      "BasePath": "_content/ProjectQuiz",
+      "RelativePath": "videos/d368b86f-fe35-4494-bf03-63e771582ec3.mp4",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\videos\\d368b86f-fe35-4494-bf03-63e771582ec3.mp4"
+    },
+    {
+      "Identity": "C:\\Users\\ntdat\\source\\repos\\ProjectQuiz\\ProjectQuiz\\wwwroot\\videos\\ebada78a-3050-45e9-a260-e4742eff8a96.mp4",
+      "SourceId": "ProjectQuiz",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\ntdat\\source\\repos\\ProjectQuiz\\ProjectQuiz\\wwwroot\\",
+      "BasePath": "_content/ProjectQuiz",
+      "RelativePath": "videos/ebada78a-3050-45e9-a260-e4742eff8a96.mp4",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\videos\\ebada78a-3050-45e9-a260-e4742eff8a96.mp4"
     }
   ]
 }

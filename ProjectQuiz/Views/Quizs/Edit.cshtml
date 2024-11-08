@@ -1,19 +1,24 @@
 ﻿@model ProjectQuiz.Data.Quiz
 
-<h1>Edit Quiz</h1>
-<form asp-action="Edit" asp-route-id="@Model.QuizId" method="post">
+@{
+    ViewData["Title"] = "Edit";
+}
 
-    @Html.AntiForgeryToken() 
+<h1>Edit Quiz Question</h1>
 
+<form asp-action="Edit" method="post">
     <div class="form-group">
         <label asp-for="Title" class="control-label"></label>
         <input asp-for="Title" class="form-control" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
 
+    <input type="hidden" asp-for="ProjectId" value="@ViewBag.ProjectId" />
+    <input type="hidden" asp-for="QuizId" />
+
     <div class="form-group">
-        <label asp-for="ProjectId" class="control-label"></label>
-        <select asp-for="ProjectId" class="form-control" asp-items="ViewBag.ProjectId"></select>
+        <label asp-for="QuestionType" class="control-label">Question Type</label>
+        <select asp-for="QuestionType" asp-items="ViewBag.QuestionTypeOptions" class="form-control" id="questionTypeSelect"></select>
     </div>
 
     <div class="form-group">
@@ -22,40 +27,29 @@
         <span asp-validation-for="QuestionText" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="QuestionType" class="control-label">Question Type</label>
-        <select asp-for="QuestionType" class="form-control" id="questionTypeSelect">
-            <option value="multiple-choice">Multiple Choice</option>
-            <option value="short-answer">Short Answer</option>
-        </select>
-    </div>
-
     <!-- Multiple Choice Options -->
-    <div id="multipleChoiceOptions" style="display:none;">
+    <div id="multipleChoiceOptions" style="display: @(Model.QuestionType == "multiple-choice" ? "block" : "none");">
         <div class="form-group">
             <label class="control-label">Multiple Choice Options</label>
-            <input type="text" class="form-control mt-2" name="Answers[]" value="@Model.Answers?.Split(',')[0]" placeholder="Enter option 1" />
-            <input type="text" class="form-control mt-2" name="Answers[]" value="@Model.Answers?.Split(',')[1]" placeholder="Enter option 2" />
-            <input type="text" class="form-control mt-2" name="Answers[]" value="@Model.Answers?.Split(',')[2]" placeholder="Enter option 3" />
-            <input type="text" class="form-control mt-2" name="Answers[]" value="@Model.Answers?.Split(',')[3]" placeholder="Enter option 4" />
+            <div id="multipleChoiceList">
+                <input type="text" class="form-control mt-2" name="Answers[]" placeholder="Enter option 1" />
+                <input type="text" class="form-control mt-2" name="Answers[]" placeholder="Enter option 2" />
+                <input type="text" class="form-control mt-2" name="Answers[]" placeholder="Enter option 3" />
+                <input type="text" class="form-control mt-2" name="Answers[]" placeholder="Enter option 4" />
+            </div>
         </div>
 
         <div class="form-group">
             <label class="control-label">Correct Answer</label>
-            <select class="form-control" name="correctAnswer">
-                <option value="1">Option 1</option>
-                <option value="2">Option 2</option>
-                <option value="3">Option 3</option>
-                <option value="4">Option 4</option>
-            </select>
+            <select class="form-control" name="correctAnswerMCQ" asp-items="ViewBag.CorrectAnswerOptions"></select>
         </div>
     </div>
 
     <!-- Short Answer Option -->
-    <div id="shortAnswerOption" style="display:none;">
+    <div id="shortAnswerOption" style="display: @(Model.QuestionType == "short-answer" ? "block" : "none");">
         <div class="form-group">
             <label class="control-label">Correct Answer</label>
-            <input type="text" class="form-control" name="CorrectAnswer" placeholder="Enter the correct answer" />
+            <input type="text" class="form-control" name="CorrectAnswerSAQ" value="@Model.CorrectAnswer" placeholder="Enter the correct answer" />
         </div>
     </div>
 
@@ -65,6 +59,8 @@
 </form>
 
 @section Scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+
     <script>
         document.getElementById('questionTypeSelect').addEventListener('change', function () {
             var selectedValue = this.value;

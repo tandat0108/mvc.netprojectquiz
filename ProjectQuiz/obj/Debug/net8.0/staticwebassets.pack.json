@@ -245,6 +245,14 @@
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
     },
     {
+      "Id": "C:\\Users\\ntdat\\source\\repos\\ProjectQuiz\\ProjectQuiz\\wwwroot\\videos\\d368b86f-fe35-4494-bf03-63e771582ec3.mp4",
+      "PackagePath": "staticwebassets\\videos\\d368b86f-fe35-4494-bf03-63e771582ec3.mp4"
+    },
+    {
+      "Id": "C:\\Users\\ntdat\\source\\repos\\ProjectQuiz\\ProjectQuiz\\wwwroot\\videos\\ebada78a-3050-45e9-a260-e4742eff8a96.mp4",
+      "PackagePath": "staticwebassets\\videos\\ebada78a-3050-45e9-a260-e4742eff8a96.mp4"
+    },
+    {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.ProjectQuiz.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },
